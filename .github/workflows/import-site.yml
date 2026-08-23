@@ -1,0 +1,39 @@
+name: Import Perlivio site
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.bootstrap/part-*.b64'
+
+permissions:
+  contents: write
+
+jobs:
+  import-site:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Check bootstrap parts
+        id: parts
+        shell: bash
+        run: |
+          count=$(find .bootstrap -maxdepth 1 -name 'part-*.b64' 2>/dev/null | wc -l)
+          echo "count=$count" >> "$GITHUB_OUTPUT"
+          echo "Bootstrap parts available: $count/11"
+      - name: Import current Perlivio site
+        if: steps.parts.outputs.count == '11'
+        shell: bash
+        run: |
+          set -euo pipefail
+          cat $(find .bootstrap -maxdepth 1 -name 'part-*.b64' | sort) | base64 --decode > /tmp/perlivio-site.tar.gz
+          tar -xzf /tmp/perlivio-site.tar.gz -C .
+          rm -rf .bootstrap
+          rm -f .github/workflows/import-site.yml
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git commit -m "feat: import current Perlivio site"
+          git push origin main
