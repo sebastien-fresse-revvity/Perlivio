@@ -22,14 +22,14 @@ jobs:
         run: |
           count=$(find .bootstrap -maxdepth 1 -name 'part-*.b64' 2>/dev/null | wc -l)
           echo "count=$count" >> "$GITHUB_OUTPUT"
-          echo "Bootstrap parts available: $count/28"
+          echo "Bootstrap parts available: $count/49"
       - name: Import current Perlivio site
-        if: steps.parts.outputs.count == '28'
+        if: steps.parts.outputs.count == '49'
         shell: bash
         run: |
           set -euo pipefail
-          cat $(find .bootstrap -maxdepth 1 -name 'part-*.b64' | sort) | base64 --decode > /tmp/perlivio-site.tar.gz
-          tar -xzf /tmp/perlivio-site.tar.gz -C .
+          cat $(find .bootstrap -maxdepth 1 -name 'part-*.b64' | sort) | base64 --decode > /tmp/perlivio-site.tar.xz
+          tar -xJf /tmp/perlivio-site.tar.xz -C .
           rm -rf .bootstrap
           rm -f .github/workflows/import-site.yml
           git config user.name "github-actions[bot]"
