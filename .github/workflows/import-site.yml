@@ -22,9 +22,9 @@ jobs:
         run: |
           count=$(find .bootstrap -maxdepth 1 -name 'part-*.b64' 2>/dev/null | wc -l)
           echo "count=$count" >> "$GITHUB_OUTPUT"
-          echo "Bootstrap parts available: $count/21"
+          echo "Bootstrap parts available: $count/12"
       - name: Import current Perlivio site
-        if: steps.parts.outputs.count == '21'
+        if: steps.parts.outputs.count == '12'
         shell: bash
         run: |
           set -euo pipefail
