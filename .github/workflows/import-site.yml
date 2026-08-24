@@ -4,7 +4,7 @@ on:
   push:
     branches: [main]
     paths:
-      - '.bootstrap/part-*.b64'
+      - '.bootstrap/READY'
 
 permissions:
   contents: write
@@ -16,15 +16,13 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
-      - name: Check bootstrap parts
-        id: parts
+      - name: Validate bootstrap payload
         shell: bash
         run: |
-          count=$(find .bootstrap -maxdepth 1 -name 'part-*.b64' 2>/dev/null | wc -l)
-          echo "count=$count" >> "$GITHUB_OUTPUT"
-          echo "Bootstrap parts available: $count/16"
+          set -euo pipefail
+          count=$(find .bootstrap -maxdepth 1 -name 'part-*.b64' | wc -l)
+          test "$count" = "89"
       - name: Import current Perlivio site
-        if: steps.parts.outputs.count == '16'
         shell: bash
         run: |
           set -euo pipefail
