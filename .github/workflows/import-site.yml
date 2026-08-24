@@ -24,14 +24,14 @@ jobs:
           set -euo pipefail
           count=$(find .bootstrap -maxdepth 1 -name 'part-*.b64' | wc -l)
           echo "Found $count bootstrap parts"
-          test "$count" = "27"
+          test "$count" = "26"
+          cat $(find .bootstrap -maxdepth 1 -name 'part-*.b64' | sort) | base64 --decode > /tmp/perlivio-site.tar.xz
+          xz -t /tmp/perlivio-site.tar.xz
 
       - name: Import current Perlivio site
         shell: bash
         run: |
           set -euo pipefail
-          cat $(find .bootstrap -maxdepth 1 -name 'part-*.b64' | sort) | base64 --decode > /tmp/perlivio-site.tar.xz
-          xz -t /tmp/perlivio-site.tar.xz
           tar -xJf /tmp/perlivio-site.tar.xz -C .
           rm -rf .bootstrap
           rm -f .github/workflows/import-site.yml
