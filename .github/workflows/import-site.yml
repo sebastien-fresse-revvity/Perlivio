@@ -21,7 +21,7 @@ jobs:
         run: |
           set -euo pipefail
           count=$(find .bootstrap -maxdepth 1 -name 'part-*.b64' | wc -l)
-          test "$count" = "7"
+          test "$count" = "27"
       - name: Import current Perlivio site
         shell: bash
         run: |
