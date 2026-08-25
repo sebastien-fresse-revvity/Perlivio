@@ -18,25 +18,38 @@ jobs:
           ref: main
           fetch-depth: 0
 
-      - name: Validate bootstrap payload
+      - name: Rebuild bootstrap archive correctly
         shell: bash
         run: |
           set -euo pipefail
           count=$(find .bootstrap -maxdepth 1 -name 'part-*.b64' | wc -l)
           echo "Found $count bootstrap parts"
           test "$count" = "26"
-          cat $(find .bootstrap -maxdepth 1 -name 'part-*.b64' | sort) | base64 --decode > /tmp/perlivio-site.tar.xz
+          rm -f /tmp/perlivio-site.tar.xz
+          for f in $(find .bootstrap -maxdepth 1 -name 'part-*.b64' | sort); do
+            base64 --decode "$f" >> /tmp/perlivio-site.tar.xz
+          done
           xz -t /tmp/perlivio-site.tar.xz
+          echo "Archive valid"
+          tar -tJf /tmp/perlivio-site.tar.xz | sed -n '1,140p'
 
-      - name: Import current Perlivio site
+      - name: Import complete site
         shell: bash
         run: |
           set -euo pipefail
-          tar -xJf /tmp/perlivio-site.tar.xz -C .
+          rm -rf /tmp/perlivio-site
+          mkdir -p /tmp/perlivio-site
+          tar -xJf /tmp/perlivio-site.tar.xz -C /tmp/perlivio-site
+          test -f /tmp/perlivio-site/index.html
+          test -f /tmp/perlivio-site/composer/index.html
+          test -f /tmp/perlivio-site/pierres/index.html
+          test -f /tmp/perlivio-site/faq/index.html
+          find . -mindepth 1 -maxdepth 1 ! -name '.git' ! -name '.github' -exec rm -rf {} +
+          cp -a /tmp/perlivio-site/. .
           rm -rf .bootstrap
-          rm -f .github/workflows/import-site.yml
+          rm -f .github/workflows/import-site.yml .github/workflows/restore-full-site.yml
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add -A
-          git commit -m "feat: import Perlivio site v8"
+          git commit -m "feat: restore complete Perlivio site"
           git push origin HEAD:main
