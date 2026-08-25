@@ -27,7 +27,7 @@ jobs:
           for f in $(find .site-import -maxdepth 1 -name 'chunk-*.b64' | sort); do
             base64 --decode "$f" >> /tmp/perlivio-full-site.tar.xz
           done
-          echo 'a2cbcf9b9a8a73ec961a8b2b0b824a2f27eaeb9956814257f77791dbf788d15f  /tmp/perlivio-full-site.tar.xz' | sha256sum -c -
+          echo 'e072468c1f52717dd7dfc8a77ddd6c519cdf63fc1ecba6cf14fc63e53e1e526d  /tmp/perlivio-full-site.tar.xz' | sha256sum -c -
           xz -t /tmp/perlivio-full-site.tar.xz
           rm -rf /tmp/perlivio-site
           mkdir -p /tmp/perlivio-site
@@ -36,6 +36,8 @@ jobs:
           test -f /tmp/perlivio-site/composer/index.html
           test -f /tmp/perlivio-site/pierres/index.html
           test -f /tmp/perlivio-site/faq/index.html
+          test -f /tmp/perlivio-site/collections/essentiel/index.html
+          test -f /tmp/perlivio-site/notre-histoire/index.html
 
       - name: Replace main with complete site
         shell: bash
