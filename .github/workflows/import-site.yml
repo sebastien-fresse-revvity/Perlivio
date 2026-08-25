@@ -17,45 +17,14 @@ jobs:
         with:
           ref: main
           fetch-depth: 0
-
-      - name: Rebuild bootstrap archive
+      - name: Fingerprint bootstrap payload
         shell: bash
         run: |
           set -euo pipefail
-          count=$(find .bootstrap -maxdepth 1 -name 'part-*.b64' | wc -l)
-          echo "Found $count bootstrap parts"
-          test "$count" = "26"
-          rm -f /tmp/perlivio-site.tar.xz
-          for f in $(find .bootstrap -maxdepth 1 -name 'part-*.b64' | sort); do
-            echo "decoding $f ($(wc -c < "$f") bytes)"
-            if [ "$f" = ".bootstrap/part-011.b64" ]; then
-              (cat "$f"; printf '=') | base64 --decode > /tmp/part.bin
-            else
-              base64 --decode "$f" > /tmp/part.bin
-            fi
-            cat /tmp/part.bin >> /tmp/perlivio-site.tar.xz
-          done
-          xz -t /tmp/perlivio-site.tar.xz
-          echo "Archive valid"
-          tar -tJf /tmp/perlivio-site.tar.xz | sed -n '1,160p'
-
-      - name: Import complete site
-        shell: bash
-        run: |
-          set -euo pipefail
-          rm -rf /tmp/perlivio-site
-          mkdir -p /tmp/perlivio-site
-          tar -xJf /tmp/perlivio-site.tar.xz -C /tmp/perlivio-site
-          test -f /tmp/perlivio-site/index.html
-          test -f /tmp/perlivio-site/composer/index.html
-          test -f /tmp/perlivio-site/pierres/index.html
-          test -f /tmp/perlivio-site/faq/index.html
-          find . -mindepth 1 -maxdepth 1 ! -name '.git' ! -name '.github' -exec rm -rf {} +
-          cp -a /tmp/perlivio-site/. .
-          rm -rf .bootstrap
-          rm -f .github/workflows/import-site.yml .github/workflows/restore-full-site.yml
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add -A
-          git commit -m "feat: restore complete Perlivio site"
-          git push origin HEAD:main
+          base64 --decode .bootstrap/part-000.b64 > /tmp/p0.bin
+          base64 --decode .bootstrap/part-024.b64 > /tmp/p24.bin
+          base64 --decode .bootstrap/part-026.b64 > /tmp/p26.bin
+          echo "P0=$(sha256sum /tmp/p0.bin | cut -d' ' -f1) SIZE0=$(wc -c < /tmp/p0.bin)"
+          echo "P24=$(sha256sum /tmp/p24.bin | cut -d' ' -f1) SIZE24=$(wc -c < /tmp/p24.bin)"
+          echo "P26=$(sha256sum /tmp/p26.bin | cut -d' ' -f1) SIZE26=$(wc -c < /tmp/p26.bin)"
+          exit 42
