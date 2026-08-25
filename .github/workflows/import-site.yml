@@ -18,7 +18,7 @@ jobs:
           ref: main
           fetch-depth: 0
 
-      - name: Rebuild bootstrap archive correctly
+      - name: Diagnose bootstrap payload
         shell: bash
         run: |
           set -euo pipefail
@@ -27,11 +27,15 @@ jobs:
           test "$count" = "26"
           rm -f /tmp/perlivio-site.tar.xz
           for f in $(find .bootstrap -maxdepth 1 -name 'part-*.b64' | sort); do
-            base64 --decode "$f" >> /tmp/perlivio-site.tar.xz
+            echo "checking $f ($(wc -c < "$f") bytes)"
+            if ! base64 --decode "$f" > /tmp/part.bin; then
+              echo "BAD_PART=$f"
+              exit 42
+            fi
+            cat /tmp/part.bin >> /tmp/perlivio-site.tar.xz
           done
           xz -t /tmp/perlivio-site.tar.xz
           echo "Archive valid"
-          tar -tJf /tmp/perlivio-site.tar.xz | sed -n '1,140p'
 
       - name: Import complete site
         shell: bash
