@@ -22,11 +22,14 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          rm -f /tmp/perlivio-pages.tar.gz
-          for f in $(find .sitepayload2 -maxdepth 1 -name 'part-*.b64' | sort); do
-            echo "decoding $f size=$(wc -c < "$f") clean=$(tr -cd 'A-Za-z0-9+/=' < "$f" | wc -c)"
-            tr -cd 'A-Za-z0-9+/=' < "$f" | base64 --ignore-garbage --decode >> /tmp/perlivio-pages.tar.gz
-          done
+          cat $(find .sitepayload2 -maxdepth 1 -name 'part-*.b64' | sort) > /tmp/perlivio-pages.b64
+          len=$(wc -c < /tmp/perlivio-pages.b64)
+          rem=$((len % 4))
+          echo "combined base64 length=$len remainder=$rem"
+          if [ "$rem" = "2" ]; then printf '==' >> /tmp/perlivio-pages.b64; fi
+          if [ "$rem" = "3" ]; then printf '=' >> /tmp/perlivio-pages.b64; fi
+          test "$rem" != "1"
+          base64 --decode /tmp/perlivio-pages.b64 > /tmp/perlivio-pages.tar.gz
           gzip -t /tmp/perlivio-pages.tar.gz
           rm -rf /tmp/payload
           mkdir -p /tmp/payload
