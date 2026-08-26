@@ -23,27 +23,18 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          count=$(find .site-import-final -maxdepth 1 -name 'chunk-*.b64' | wc -l)
-          echo "Found $count payload chunks"
-          test "$count" = "16"
-
-          : > /tmp/perlivio-site.b64
-          for f in $(find .site-import-final -maxdepth 1 -name 'chunk-*.b64' | sort); do
-            case "$(basename "$f")" in
-              chunk-13.b64|chunk-14.b64)
-                head -c 19000 "$f" >> /tmp/perlivio-site.b64
-                ;;
-              *)
-                cat "$f" >> /tmp/perlivio-site.b64
-                ;;
-            esac
+          for f in chunk-00.b64 chunk-01.b64 chunk-02.b64 chunk-03.b64; do
+            test -f ".site-import-final/$f"
           done
-
+          cat .site-import-final/chunk-00.b64 \
+              .site-import-final/chunk-01.b64 \
+              .site-import-final/chunk-02.b64 \
+              .site-import-final/chunk-03.b64 > /tmp/perlivio-site.b64
           actual_size=$(wc -c < /tmp/perlivio-site.b64)
           echo "Rebuilt base64 size: $actual_size"
-          test "$actual_size" = "288952"
+          test "$actual_size" = "52488"
           base64 --decode /tmp/perlivio-site.b64 > /tmp/perlivio-site.tar.xz
-          echo 'b811f9fbe1292b3831a9058f034477d79ef0164df7488bef05daa558b74a19e2  /tmp/perlivio-site.tar.xz' | sha256sum -c -
+          echo 'af710d910dc0d0e11548b9f00cf38ea21bdf542bbdb57b658871c759c09e7319  /tmp/perlivio-site.tar.xz' | sha256sum -c -
           xz -t /tmp/perlivio-site.tar.xz
 
           rm -rf /tmp/perlivio-site
