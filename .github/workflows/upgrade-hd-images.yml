@@ -19,24 +19,25 @@ jobs:
           ref: ${{ github.event.pull_request.head.sha }}
           fetch-depth: 0
 
-      - name: Rebuild and verify HD media
+      - name: Rebuild and verify HD assets
         shell: bash
         run: |
           set -euo pipefail
-          find .hd-images-upload -name 'chunk-*.b64' -type f | sort | xargs cat | base64 --decode > /tmp/perlivio-hd-media.tar.xz
-          echo 'd4d7da7b36913fb5b4c12f0fd6ccccd9e6c49273efbc8180926c22bb2158a658  /tmp/perlivio-hd-media.tar.xz' | sha256sum -c -
-          xz -t /tmp/perlivio-hd-media.tar.xz
-          rm -rf /tmp/perlivio-hd-media
-          mkdir -p /tmp/perlivio-hd-media
-          tar -xJf /tmp/perlivio-hd-media.tar.xz -C /tmp/perlivio-hd-media
-          test -f /tmp/perlivio-hd-media/hero.webp
-          test -f /tmp/perlivio-hd-media/essentiel.webp
-          test -f /tmp/perlivio-hd-media/argent.webp
-          test -f /tmp/perlivio-hd-media/signature.webp
-          test -f /tmp/perlivio-hd-media/metal.webp
-          test -f /tmp/perlivio-hd-media/inox.webp
-          test -f /tmp/perlivio-hd-media/reserve.webp
-          test -f /tmp/perlivio-hd-media/stones.webp
+          find .hd-images-upload -name 'chunk-*.b64' -type f | sort | xargs cat | base64 --decode > /tmp/perlivio-hd-final.tar.xz
+          echo 'f28fae18e997030205c831ec4cec6e72f0a2937320f58d09560dae342d5ab5bb  /tmp/perlivio-hd-final.tar.xz' | sha256sum -c -
+          xz -t /tmp/perlivio-hd-final.tar.xz
+          rm -rf /tmp/perlivio-hd-final
+          mkdir -p /tmp/perlivio-hd-final
+          tar -xJf /tmp/perlivio-hd-final.tar.xz -C /tmp/perlivio-hd-final
+          test -f /tmp/perlivio-hd-final/media/hero.webp
+          test -f /tmp/perlivio-hd-final/media/essentiel.webp
+          test -f /tmp/perlivio-hd-final/media/argent.webp
+          test -f /tmp/perlivio-hd-final/media/signature.webp
+          test -f /tmp/perlivio-hd-final/media/metal.webp
+          test -f /tmp/perlivio-hd-final/media/inox.webp
+          test -f /tmp/perlivio-hd-final/media/reserve.webp
+          test -f /tmp/perlivio-hd-final/media/stones.webp
+          test "$(find /tmp/perlivio-hd-final/beads -name '*.webp' | wc -l)" = "18"
 
       - name: Replace compressed site images
         shell: bash
@@ -44,20 +45,21 @@ jobs:
           set -euo pipefail
           git fetch origin main
           git checkout -B main origin/main
-          cp /tmp/perlivio-hd-media/hero.webp assets/media/hero-lifestyle.webp
-          cp /tmp/perlivio-hd-media/hero.webp assets/media/collections-overview.webp
-          cp /tmp/perlivio-hd-media/argent.webp assets/media/bracelet-single-a.webp
-          cp /tmp/perlivio-hd-media/argent.webp assets/media/packshot-argent.webp
-          cp /tmp/perlivio-hd-media/essentiel.webp assets/media/bracelet-single-b.webp
-          cp /tmp/perlivio-hd-media/essentiel.webp assets/media/packshot-essentiel.webp
-          cp /tmp/perlivio-hd-media/signature.webp assets/media/bracelet-single-d.webp
-          cp /tmp/perlivio-hd-media/signature.webp assets/media/packshot-signature.webp
-          cp /tmp/perlivio-hd-media/metal.webp assets/media/bracelet-single-e.webp
-          cp /tmp/perlivio-hd-media/metal.webp assets/media/packshot-metal.webp
-          cp /tmp/perlivio-hd-media/inox.webp assets/media/packshot-inox.webp
-          cp /tmp/perlivio-hd-media/reserve.webp assets/media/packshot-reserve.webp
-          cp /tmp/perlivio-hd-media/reserve.webp assets/media/reserve-lifestyle.webp
-          cp /tmp/perlivio-hd-media/stones.webp assets/media/stones-catalogue.webp
+          cp /tmp/perlivio-hd-final/media/hero.webp assets/media/hero-lifestyle.webp
+          cp /tmp/perlivio-hd-final/media/hero.webp assets/media/collections-overview.webp
+          cp /tmp/perlivio-hd-final/media/argent.webp assets/media/bracelet-single-a.webp
+          cp /tmp/perlivio-hd-final/media/argent.webp assets/media/packshot-argent.webp
+          cp /tmp/perlivio-hd-final/media/essentiel.webp assets/media/bracelet-single-b.webp
+          cp /tmp/perlivio-hd-final/media/essentiel.webp assets/media/packshot-essentiel.webp
+          cp /tmp/perlivio-hd-final/media/signature.webp assets/media/bracelet-single-d.webp
+          cp /tmp/perlivio-hd-final/media/signature.webp assets/media/packshot-signature.webp
+          cp /tmp/perlivio-hd-final/media/metal.webp assets/media/bracelet-single-e.webp
+          cp /tmp/perlivio-hd-final/media/metal.webp assets/media/packshot-metal.webp
+          cp /tmp/perlivio-hd-final/media/inox.webp assets/media/packshot-inox.webp
+          cp /tmp/perlivio-hd-final/media/reserve.webp assets/media/packshot-reserve.webp
+          cp /tmp/perlivio-hd-final/media/reserve.webp assets/media/reserve-lifestyle.webp
+          cp /tmp/perlivio-hd-final/media/stones.webp assets/media/stones-catalogue.webp
+          cp /tmp/perlivio-hd-final/beads/*.webp assets/beads/
           rm -rf .hd-images-upload
           rm -f .github/workflows/upgrade-hd-images.yml
           git config user.name 'github-actions[bot]'
