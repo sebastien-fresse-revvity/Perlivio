@@ -1,0 +1,10 @@
+PERLIVIO — VERSION AUTONOME CORRIGÉE
+
+1. Décompressez entièrement le ZIP.
+2. Ouvrez index.html : CSS, JavaScript et images fonctionnent aussi en ouverture locale.
+3. Pour un hébergement web, envoyez le CONTENU de ce dossier à la racine ou dans un sous-dossier : les chemins restent relatifs.
+
+Point d’entrée : index.html
+Configurateur : composer/index.html
+
+Aucune dépendance /manus-storage ni CDN n’est requise pour les assets du site.

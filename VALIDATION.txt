@@ -1,0 +1,27 @@
+PERLIVIO — RAPPORT DE VALIDATION
+
+Version : configurateur UX v4 / liberté guidée
+HTML : 45
+CSS : 1
+JavaScript : 2
+Images de pierres : 18
+Références HTML locales contrôlées : 2723
+Références HTML manquantes : 0
+Références /manus-storage restantes : 0
+Syntaxe assets/js/data.js : OK (node --check)
+Syntaxe assets/js/app.js : OK (node --check)
+
+Corrections v4 :
+- aperçu mobile compact (84 px) au lieu d'un grand bloc qui masque les choix ;
+- agrandissement volontaire via « Voir en grand » ;
+- une seule tâche lisible par étape ;
+- cartes de gammes horizontales avec aperçu dynamique propre ;
+- suppression des halos / marqueurs sur les pierres ;
+- fermoir cylindrique placé dans une vraie ouverture du bracelet, hors premier plan ;
+- intercalaires décoratifs réduits à deux accents discrets ;
+- répétition libre d'une même pierre avec quantités − / + ;
+- composition libre jusqu'à la capacité physique du bracelet ;
+- Réserve calculée à partir des Socles réellement remplacées ;
+- preview repliée automatiquement lors du passage d'une étape à l'autre.
+
+Le paiement reste volontairement non activé tant que prix, variantes, juridique, délais et matières ne sont pas validés.
