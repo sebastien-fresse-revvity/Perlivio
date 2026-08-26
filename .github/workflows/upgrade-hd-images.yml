@@ -26,7 +26,7 @@ jobs:
           count=$(find .hd-images-upload -name 'chunk-*.b64' -type f | wc -l)
           test "$count" = "20"
           find .hd-images-upload -name 'chunk-*.b64' -type f | sort | xargs cat | base64 --decode > /tmp/perlivio-hd-media.tar.xz
-          echo '57af4bae29c1d33410b61e69a9921fbeb92dd4a06eb01b9751a606729a1837e1  /tmp/perlivio-hd-media.tar.xz' | sha256sum -c -
+          echo '3ef048abcd52f60031fecf20d7aaa733231a2de341777a8696eae6002352c436  /tmp/perlivio-hd-media.tar.xz' | sha256sum -c -
           xz -t /tmp/perlivio-hd-media.tar.xz
           rm -rf /tmp/perlivio-hd-media
           mkdir -p /tmp/perlivio-hd-media
