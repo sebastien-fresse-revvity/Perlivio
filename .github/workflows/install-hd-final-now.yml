@@ -20,30 +20,47 @@ jobs:
 
       - name: Decode and validate final WebP files
         shell: bash
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_REPO: ${{ github.repository }}
         run: |
           set -euo pipefail
           python - <<'PY'
           from pathlib import Path
-          import base64, re
+          import base64, json, os, re, urllib.request
 
           root = Path('.hd-images-final-now')
           out = Path('/tmp/perlivio-images')
           out.mkdir(parents=True, exist_ok=True)
-          sources = {
-              'packshot-essentiel': ['packshot-essentiel.b64'],
-              'packshot-metal': ['packshot-metal.b64'],
-              'packshot-inox': ['packshot-inox.b64'],
-              'packshot-argent': ['packshot-argent.b64'],
-              'packshot-reserve': ['packshot-reserve.b64'],
-              'packshot-signature': ['signature-0.b64', 'signature-1.b64'],
-              'hero-lifestyle': ['hero-0.b64', 'hero-1.b64'],
-              'stones-catalogue': ['stones-0.b64', 'stones-1.b64'],
-          }
-          for name, parts in sources.items():
-              raw = b''.join((root / part).read_bytes() for part in parts)
+          repo = os.environ['GH_REPO']
+          token = os.environ['GH_TOKEN']
+
+          def api_blob(sha):
+              req = urllib.request.Request(
+                  f'https://api.github.com/repos/{repo}/git/blobs/{sha}',
+                  headers={
+                      'Authorization': f'Bearer {token}',
+                      'Accept': 'application/vnd.github+json',
+                      'X-GitHub-Api-Version': '2022-11-28',
+                  },
+              )
+              with urllib.request.urlopen(req) as response:
+                  obj = json.load(response)
+              return base64.b64decode(obj['content'])
+
+          def decode_text_parts(shas):
+              raw = b''.join(api_blob(sha) for sha in shas)
               raw = re.sub(rb'[^A-Za-z0-9+/=]', b'', raw)
               raw += b'=' * ((4 - len(raw) % 4) % 4)
-              data = base64.b64decode(raw, validate=False)
+              return base64.b64decode(raw, validate=False)
+
+          def decode_staging(path):
+              raw = (root / path).read_bytes()
+              raw = re.sub(rb'[^A-Za-z0-9+/=]', b'', raw)
+              raw += b'=' * ((4 - len(raw) % 4) % 4)
+              return base64.b64decode(raw, validate=False)
+
+          def validate(name, data):
               if len(data) < 12 or data[:4] != b'RIFF' or data[8:12] != b'WEBP':
                   raise SystemExit(f'{name}: invalid WebP header')
               declared = int.from_bytes(data[4:8], 'little') + 8
@@ -51,6 +68,25 @@ jobs:
                   raise SystemExit(f'{name}: truncated WebP ({len(data)} != {declared})')
               (out / f'{name}.webp').write_bytes(data)
               print(f'{name}: {len(data)} bytes OK')
+
+          validate('packshot-essentiel', decode_staging('packshot-essentiel.b64'))
+          validate('packshot-metal', decode_staging('packshot-metal.b64'))
+          validate('packshot-inox', decode_staging('packshot-inox.b64'))
+          validate('packshot-argent', decode_staging('packshot-argent.b64'))
+
+          validate('packshot-reserve', api_blob('868c10202aabac5ee3770a19e923f7e9e58e48e5'))
+          validate('packshot-signature', decode_text_parts([
+              '079f7177c7cea4bfcdab5b9b4f0f1879f778f460',
+              '6126901796eaab2addb3a30e115fb8ed2d0046ab',
+          ]))
+          validate('hero-lifestyle', decode_text_parts([
+              '97b47af43e8ac1a8a3b5a4de41cd87d6c768c5d0',
+              'bc8297d4e83b704acfedc84337a3f72236774f6f',
+          ]))
+          validate('stones-catalogue', decode_text_parts([
+              'a9e9934c3ede541bca2c6df62564422362d52b05',
+              'b043bb85e37e90c3693b37ae424733e6a1a78032',
+          ]))
           PY
 
       - name: Publish WebP files on main
