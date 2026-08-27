@@ -24,4 +24,6 @@ Corrections v4 :
 - Réserve calculée à partir des Socles réellement remplacées ;
 - preview repliée automatiquement lors du passage d'une étape à l'autre.
 
+Publication média : visuels WebP haute qualité publiés sur main et hero relié à hero-lifestyle.webp.
+
 Le paiement reste volontairement non activé tant que prix, variantes, juridique, délais et matières ne sont pas validés.
