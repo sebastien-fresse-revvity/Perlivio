@@ -33,7 +33,7 @@ jobs:
               'packshot-metal': ['packshot-metal.b64'],
               'packshot-inox': ['packshot-inox.b64'],
               'packshot-argent': ['packshot-argent.b64'],
-              'packshot-reserve': ['reserve-0.b64', 'reserve-1.b64'],
+              'packshot-reserve': ['reserve-a2.b64', 'reserve-b2.b64'],
               'packshot-signature': ['signature-0.b64', 'signature-1.b64'],
               'hero-lifestyle': ['hero-0.b64', 'hero-1.b64'],
               'stones-catalogue': ['stones-0.b64', 'stones-1.b64'],
