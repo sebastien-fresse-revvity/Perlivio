@@ -73,8 +73,7 @@ jobs:
           validate('packshot-metal', decode_staging('packshot-metal.b64'))
           validate('packshot-inox', decode_staging('packshot-inox.b64'))
           validate('packshot-argent', decode_staging('packshot-argent.b64'))
-
-          validate('packshot-reserve', api_blob('868c10202aabac5ee3770a19e923f7e9e58e48e5'))
+          validate('packshot-reserve', Path('assets/media/packshot-reserve.webp').read_bytes())
           validate('packshot-signature', decode_text_parts([
               '079f7177c7cea4bfcdab5b9b4f0f1879f778f460',
               '6126901796eaab2addb3a30e115fb8ed2d0046ab',
@@ -107,8 +106,6 @@ jobs:
           cp "$src/packshot-argent.webp" assets/media/bracelet-single-a.webp
           cp "$src/packshot-signature.webp" assets/media/packshot-signature.webp
           cp "$src/packshot-signature.webp" assets/media/bracelet-single-d.webp
-          cp "$src/packshot-reserve.webp" assets/media/packshot-reserve.webp
-          cp "$src/packshot-reserve.webp" assets/media/reserve-lifestyle.webp
           cp "$src/stones-catalogue.webp" assets/media/stones-catalogue.webp
           python - <<'PY'
           from pathlib import Path
