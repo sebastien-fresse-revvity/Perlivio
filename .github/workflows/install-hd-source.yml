@@ -24,7 +24,7 @@ jobs:
           set -euo pipefail
           count=$(find .hd-images-source-final -name 'part-*.bin' -type f | wc -l)
           echo "Found $count binary parts"
-          test "$count" = "4"
+          test "$count" = "10"
           find .hd-images-source-final -name 'part-*.bin' -type f | sort | xargs cat > /tmp/perlivio-hd-source.tar.xz
           echo 'f372a46d1fd86edc7738d2d183207f150233bdf4bfce3486e31cd475d78f9320  /tmp/perlivio-hd-source.tar.xz' | sha256sum -c -
           xz -t /tmp/perlivio-hd-source.tar.xz
