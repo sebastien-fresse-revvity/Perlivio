@@ -5,6 +5,7 @@ on:
     branches: [hd-images-final-now]
     paths:
       - '.hd-images-final-now/READY'
+      - '.github/workflows/install-hd-final-now.yml'
 
 permissions:
   contents: write
