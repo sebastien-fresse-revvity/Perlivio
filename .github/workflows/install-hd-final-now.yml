@@ -22,11 +22,17 @@ jobs:
         run: |
           set -euo pipefail
           mkdir -p /tmp/perlivio-images
-          for n in hero-lifestyle packshot-essentiel packshot-metal packshot-inox packshot-argent packshot-signature packshot-reserve stones-catalogue; do
-            test -s ".hd-images-final-now/$n.b64"
-            base64 --decode ".hd-images-final-now/$n.b64" > "/tmp/perlivio-images/$n.webp"
-            test "$(stat -c%s "/tmp/perlivio-images/$n.webp")" -gt 1000
-            file "/tmp/perlivio-images/$n.webp" | grep -Eqi 'Web/P|WebP'
+          base64 --decode .hd-images-final-now/packshot-essentiel.b64 > /tmp/perlivio-images/packshot-essentiel.webp
+          base64 --decode .hd-images-final-now/packshot-metal.b64 > /tmp/perlivio-images/packshot-metal.webp
+          base64 --decode .hd-images-final-now/packshot-inox.b64 > /tmp/perlivio-images/packshot-inox.webp
+          base64 --decode .hd-images-final-now/packshot-argent.b64 > /tmp/perlivio-images/packshot-argent.webp
+          cat .hd-images-final-now/reserve-0.b64 .hd-images-final-now/reserve-1.b64 | base64 --decode > /tmp/perlivio-images/packshot-reserve.webp
+          base64 --decode .hd-images-final-now/signature-final.b64 > /tmp/perlivio-images/packshot-signature.webp
+          cat .hd-images-final-now/hero-0.b64 .hd-images-final-now/hero-1.b64 | base64 --decode > /tmp/perlivio-images/hero-lifestyle.webp
+          cat .hd-images-final-now/stones-0.b64 .hd-images-final-now/stones-1.b64 | base64 --decode > /tmp/perlivio-images/stones-catalogue.webp
+          for f in /tmp/perlivio-images/*.webp; do
+            test "$(stat -c%s "$f")" -gt 1000
+            file "$f" | grep -Eqi 'Web/P|WebP'
           done
 
       - name: Publish WebP files on main
