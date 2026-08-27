@@ -1,13 +1,10 @@
 name: Install verified Perlivio HD source imagery
-
 on:
   push:
     branches: [hd-images-source-final]
     paths: ['.hd-images-source-final/READY']
-
 permissions:
   contents: write
-
 jobs:
   install:
     runs-on: ubuntu-latest
