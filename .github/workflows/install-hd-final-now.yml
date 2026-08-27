@@ -1,0 +1,87 @@
+name: Install final Perlivio HD imagery
+
+on:
+  push:
+    branches: [hd-images-final-now]
+    paths:
+      - '.hd-images-final-now/READY'
+
+permissions:
+  contents: write
+
+jobs:
+  install:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout payload branch
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Rebuild and verify payload
+        shell: bash
+        run: |
+          set -euo pipefail
+          count=$(find .hd-images-final-now -maxdepth 1 -name 'chunk-*.b64' -type f | wc -l)
+          test "$count" = "15"
+          find .hd-images-final-now -maxdepth 1 -name 'chunk-*.b64' -type f | sort | xargs cat | base64 --decode > /tmp/perlivio-final-assets.tar.xz
+          echo '96de4523870a658929115afc7d22950f29d3ca1277eaf712bc49ed034b705590  /tmp/perlivio-final-assets.tar.xz' | sha256sum -c -
+          xz -t /tmp/perlivio-final-assets.tar.xz
+          rm -rf /tmp/perlivio-final-assets
+          mkdir -p /tmp/perlivio-final-assets
+          tar -xJf /tmp/perlivio-final-assets.tar.xz -C /tmp/perlivio-final-assets
+          test -f /tmp/perlivio-final-assets/assets/media/hero-lifestyle.webp
+          test -f /tmp/perlivio-final-assets/assets/media/packshot-essentiel.webp
+          test -f /tmp/perlivio-final-assets/assets/media/packshot-metal.webp
+          test -f /tmp/perlivio-final-assets/assets/media/packshot-inox.webp
+          test -f /tmp/perlivio-final-assets/assets/media/packshot-argent.webp
+          test -f /tmp/perlivio-final-assets/assets/media/packshot-signature.webp
+          test -f /tmp/perlivio-final-assets/assets/media/packshot-reserve.webp
+          test -f /tmp/perlivio-final-assets/assets/media/stones-catalogue.webp
+          test "$(find /tmp/perlivio-final-assets/assets/beads -name '*.webp' -type f | wc -l)" = "18"
+
+      - name: Commit real image files to main
+        shell: bash
+        run: |
+          set -euo pipefail
+          git fetch origin main
+          git checkout -B main origin/main
+
+          src=/tmp/perlivio-final-assets/assets
+          cp "$src/media/hero-lifestyle.webp" assets/media/hero-lifestyle.webp
+          cp "$src/media/hero-lifestyle.webp" assets/media/collections-overview.webp
+          cp "$src/media/packshot-essentiel.webp" assets/media/packshot-essentiel.webp
+          cp "$src/media/packshot-essentiel.webp" assets/media/bracelet-single-b.webp
+          cp "$src/media/packshot-metal.webp" assets/media/packshot-metal.webp
+          cp "$src/media/packshot-metal.webp" assets/media/bracelet-single-e.webp
+          cp "$src/media/packshot-inox.webp" assets/media/packshot-inox.webp
+          cp "$src/media/packshot-argent.webp" assets/media/packshot-argent.webp
+          cp "$src/media/packshot-argent.webp" assets/media/bracelet-single-a.webp
+          cp "$src/media/packshot-signature.webp" assets/media/packshot-signature.webp
+          cp "$src/media/packshot-signature.webp" assets/media/bracelet-single-d.webp
+          cp "$src/media/packshot-reserve.webp" assets/media/packshot-reserve.webp
+          cp "$src/media/packshot-reserve.webp" assets/media/reserve-lifestyle.webp
+          cp "$src/media/stones-catalogue.webp" assets/media/stones-catalogue.webp
+          cp "$src/beads"/*.webp assets/beads/
+
+          python - <<'PY'
+          from pathlib import Path
+          p = Path('index.html')
+          text = p.read_text(encoding='utf-8')
+          old = 'src="assets/media/packshot-signature.webp"'
+          new = 'src="assets/media/hero-lifestyle.webp"'
+          if old in text:
+              text = text.replace(old, new, 1)
+          elif new not in text:
+              raise SystemExit('Hero image reference not found')
+          p.write_text(text, encoding='utf-8')
+          PY
+
+          rm -rf .hd-images-upload .hd-images-upload-v2 .hd-images-direct-v3 .hd-images-source-final .hd-images-final-now
+          rm -f .github/workflows/upgrade-hd-images.yml .github/workflows/upgrade-hd-images-v2.yml .github/workflows/install-hd-binary.yml .github/workflows/install-hd-source.yml .github/workflows/install-hd-final-now.yml
+
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -A
+          git commit -m 'fix: publish final high-quality Perlivio imagery'
+          git push origin HEAD:main
