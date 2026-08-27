@@ -36,7 +36,7 @@ jobs:
           echo '75795365dc3c2d29b2ec68ef130b82e4ac87f216ff8669e7968fdefd74143139  packshot-metal.webp' | sha256sum -c -
           echo '41853934c4001bde1353468731a7dbf565397b3db30c59fabf4ab6b390e88192  packshot-inox.webp' | sha256sum -c -
           echo '66332420bad9763421a6195d4c8fdb060aed1568803d80b75ca01d21809be021  packshot-argent.webp' | sha256sum -c -
-          echo 'b84b055883e3ad7927085a9b954d6e83af0c503d3a980077cb874227ef08045d  packshot-reserve.webp' | sha256sum -c -
+          echo '2d4768af65df4991eda51a5895bf270af2ca5957ab1ee9529d19c24156daf534  packshot-reserve.webp' | sha256sum -c -
           echo 'f84af8e2e3a7740952bf85f7da11fba61c4054dfd734699016932c3d96b3d6c1  packshot-signature.webp' | sha256sum -c -
           echo '4b4454aafc1163beafaa7166432acb1142864886efbf657414f5c16df89822e7  hero-lifestyle.webp' | sha256sum -c -
           echo 'bc89a507ccf648d1f23d7953a7ece4af5a42875b38a1b488e5baada8cb20dae5  stones-catalogue.webp' | sha256sum -c -
