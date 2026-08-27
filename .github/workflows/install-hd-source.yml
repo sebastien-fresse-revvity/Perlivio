@@ -24,9 +24,9 @@ jobs:
           set -euo pipefail
           count=$(find .hd-images-source-final -name 'chunk-*.b64' -type f | wc -l)
           echo "Found $count chunks"
-          test "$count" = "14"
+          test "$count" = "10"
           find .hd-images-source-final -name 'chunk-*.b64' -type f | sort | xargs cat | base64 --decode > /tmp/perlivio-hd-source.tar.xz
-          echo '8df06a4b745d62cc36ad97dc3ffcfa19a197dd82cc867c2c1069dcc999e297fb  /tmp/perlivio-hd-source.tar.xz' | sha256sum -c -
+          echo 'f372a46d1fd86edc7738d2d183207f150233bdf4bfce3486e31cd475d78f9320  /tmp/perlivio-hd-source.tar.xz' | sha256sum -c -
           xz -t /tmp/perlivio-hd-source.tar.xz
           rm -rf /tmp/perlivio-hd
           mkdir -p /tmp/perlivio-hd
