@@ -3,8 +3,7 @@ name: Install verified Perlivio HD source imagery
 on:
   push:
     branches: [hd-images-source-final]
-    paths:
-      - '.hd-images-source-final/READY'
+    paths: ['.hd-images-source-final/READY']
 
 permissions:
   contents: write
@@ -13,8 +12,7 @@ jobs:
   install:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout payload branch
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
         with:
           fetch-depth: 0
       - name: Rebuild and verify HD payload
