@@ -17,7 +17,6 @@ jobs:
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
-
       - name: Rebuild and verify HD payload
         shell: bash
         run: |
@@ -37,7 +36,6 @@ jobs:
           test -f /tmp/perlivio-hd/assets/media/packshot-signature.webp
           test -f /tmp/perlivio-hd/assets/media/packshot-reserve.webp
           test "$(find /tmp/perlivio-hd/assets/beads -name '*.webp' -type f | wc -l)" = "18"
-
       - name: Install verified assets on main
         shell: bash
         run: |
