@@ -24,9 +24,9 @@ jobs:
           set -euo pipefail
           count=$(find .hd-images-source-final -name 'chunk-*.b64' -type f | wc -l)
           echo "Found $count chunks"
-          test "$count" = "15"
+          test "$count" = "14"
           find .hd-images-source-final -name 'chunk-*.b64' -type f | sort | xargs cat | base64 --decode > /tmp/perlivio-hd-source.tar.xz
-          echo 'd5c9b13fc6994baf7c2c1bfc8bfa656b8e111ea91df4e3466cdf7ba7039fa0bf  /tmp/perlivio-hd-source.tar.xz' | sha256sum -c -
+          echo '8df06a4b745d62cc36ad97dc3ffcfa19a197dd82cc867c2c1069dcc999e297fb  /tmp/perlivio-hd-source.tar.xz' | sha256sum -c -
           xz -t /tmp/perlivio-hd-source.tar.xz
           rm -rf /tmp/perlivio-hd
           mkdir -p /tmp/perlivio-hd
@@ -46,13 +46,13 @@ jobs:
           git fetch origin main
           git checkout -B main origin/main
 
-          cp /tmp/perlivio-hd/assets/media/hero-lifestyle.webp assets/media/hero-lifestyle.webp
-          cp /tmp/perlivio-hd/assets/media/collections-overview.webp assets/media/collections-overview.webp
-          cp /tmp/perlivio-hd/assets/media/packshot-essentiel.webp assets/media/packshot-essentiel.webp
-          cp /tmp/perlivio-hd/assets/media/packshot-argent.webp assets/media/packshot-argent.webp
-          cp /tmp/perlivio-hd/assets/media/packshot-signature.webp assets/media/packshot-signature.webp
-          cp /tmp/perlivio-hd/assets/media/packshot-reserve.webp assets/media/packshot-reserve.webp
-          cp /tmp/perlivio-hd/assets/media/reserve-lifestyle.webp assets/media/reserve-lifestyle.webp
+          cp -L /tmp/perlivio-hd/assets/media/hero-lifestyle.webp assets/media/hero-lifestyle.webp
+          cp -L /tmp/perlivio-hd/assets/media/collections-overview.webp assets/media/collections-overview.webp
+          cp -L /tmp/perlivio-hd/assets/media/packshot-essentiel.webp assets/media/packshot-essentiel.webp
+          cp -L /tmp/perlivio-hd/assets/media/packshot-argent.webp assets/media/packshot-argent.webp
+          cp -L /tmp/perlivio-hd/assets/media/packshot-signature.webp assets/media/packshot-signature.webp
+          cp -L /tmp/perlivio-hd/assets/media/packshot-reserve.webp assets/media/packshot-reserve.webp
+          cp -L /tmp/perlivio-hd/assets/media/reserve-lifestyle.webp assets/media/reserve-lifestyle.webp
           cp /tmp/perlivio-hd/assets/beads/*.webp assets/beads/
 
           python - <<'PY'
