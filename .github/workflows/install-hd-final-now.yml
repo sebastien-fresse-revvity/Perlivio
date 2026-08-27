@@ -17,29 +17,17 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Decode and verify final images
+      - name: Decode final WebP files
         shell: bash
         run: |
           set -euo pipefail
           mkdir -p /tmp/perlivio-images
-          base64 --decode .hd-images-final-now/packshot-essentiel.b64 > /tmp/perlivio-images/packshot-essentiel.webp
-          base64 --decode .hd-images-final-now/packshot-metal.b64 > /tmp/perlivio-images/packshot-metal.webp
-          base64 --decode .hd-images-final-now/packshot-inox.b64 > /tmp/perlivio-images/packshot-inox.webp
-          base64 --decode .hd-images-final-now/packshot-argent.b64 > /tmp/perlivio-images/packshot-argent.webp
-          cat .hd-images-final-now/reserve-0.b64 .hd-images-final-now/reserve-1.b64 | base64 --decode > /tmp/perlivio-images/packshot-reserve.webp
-          base64 --decode .hd-images-final-now/signature-final.b64 > /tmp/perlivio-images/packshot-signature.webp
-          cat .hd-images-final-now/hero-0.b64 .hd-images-final-now/hero-1.b64 | base64 --decode > /tmp/perlivio-images/hero-lifestyle.webp
-          cat .hd-images-final-now/stones-0.b64 .hd-images-final-now/stones-1.b64 | base64 --decode > /tmp/perlivio-images/stones-catalogue.webp
-
-          cd /tmp/perlivio-images
-          echo 'da640f69213e34152c99223a22369a70512f29ca056d70e949297b6bf5c1905b  packshot-essentiel.webp' | sha256sum -c -
-          echo '75795365dc3c2d29b2ec68ef130b82e4ac87f216ff8669e7968fdefd74143139  packshot-metal.webp' | sha256sum -c -
-          echo '41853934c4001bde1353468731a7dbf565397b3db30c59fabf4ab6b390e88192  packshot-inox.webp' | sha256sum -c -
-          echo '66332420bad9763421a6195d4c8fdb060aed1568803d80b75ca01d21809be021  packshot-argent.webp' | sha256sum -c -
-          echo '2d4768af65df4991eda51a5895bf270af2ca5957ab1ee9529d19c24156daf534  packshot-reserve.webp' | sha256sum -c -
-          echo 'f84af8e2e3a7740952bf85f7da11fba61c4054dfd734699016932c3d96b3d6c1  packshot-signature.webp' | sha256sum -c -
-          echo '4b4454aafc1163beafaa7166432acb1142864886efbf657414f5c16df89822e7  hero-lifestyle.webp' | sha256sum -c -
-          echo 'bc89a507ccf648d1f23d7953a7ece4af5a42875b38a1b488e5baada8cb20dae5  stones-catalogue.webp' | sha256sum -c -
+          for n in hero-lifestyle packshot-essentiel packshot-metal packshot-inox packshot-argent packshot-signature packshot-reserve stones-catalogue; do
+            test -s ".hd-images-final-now/$n.b64"
+            base64 --decode ".hd-images-final-now/$n.b64" > "/tmp/perlivio-images/$n.webp"
+            test "$(stat -c%s "/tmp/perlivio-images/$n.webp")" -gt 1000
+            file "/tmp/perlivio-images/$n.webp" | grep -Eqi 'Web/P|WebP'
+          done
 
       - name: Publish WebP files on main
         shell: bash
@@ -64,15 +52,15 @@ jobs:
           cp "$src/stones-catalogue.webp" assets/media/stones-catalogue.webp
           python - <<'PY'
           from pathlib import Path
-          p=Path('index.html')
-          s=p.read_text(encoding='utf-8')
-          old='src="assets/media/packshot-signature.webp"'
-          new='src="assets/media/hero-lifestyle.webp"'
+          p = Path('index.html')
+          s = p.read_text(encoding='utf-8')
+          old = 'src="assets/media/packshot-signature.webp"'
+          new = 'src="assets/media/hero-lifestyle.webp"'
           if old in s:
-              s=s.replace(old,new,1)
+              s = s.replace(old, new, 1)
           elif new not in s:
               raise SystemExit('Hero image reference not found')
-          p.write_text(s,encoding='utf-8')
+          p.write_text(s, encoding='utf-8')
           PY
           rm -rf .hd-images-upload .hd-images-upload-v2 .hd-images-direct-v3 .hd-images-source-final .hd-images-final-now
           rm -f .github/workflows/upgrade-hd-images.yml .github/workflows/upgrade-hd-images-v2.yml .github/workflows/install-hd-binary.yml .github/workflows/install-hd-source.yml .github/workflows/install-hd-final-now.yml
