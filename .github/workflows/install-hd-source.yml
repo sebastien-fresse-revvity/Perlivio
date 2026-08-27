@@ -22,10 +22,12 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          count=$(find .hd-images-source-final -name 'part-*.bin' -type f | wc -l)
-          echo "Found $count binary parts"
-          test "$count" = "10"
-          find .hd-images-source-final -name 'part-*.bin' -type f | sort | xargs cat > /tmp/perlivio-hd-source.tar.xz
+          for i in 00 01 02; do test -f ".hd-images-source-final/part-$i.bin"; done
+          test "$(find .hd-images-source-final -name 'tail-*.b64' -type f | wc -l)" = "8"
+          cat .hd-images-source-final/part-00.bin .hd-images-source-final/part-01.bin .hd-images-source-final/part-02.bin > /tmp/perlivio-hd-source.tar.xz
+          for f in $(find .hd-images-source-final -name 'tail-*.b64' -type f | sort); do
+            base64 --decode "$f" >> /tmp/perlivio-hd-source.tar.xz
+          done
           echo 'f372a46d1fd86edc7738d2d183207f150233bdf4bfce3486e31cd475d78f9320  /tmp/perlivio-hd-source.tar.xz' | sha256sum -c -
           xz -t /tmp/perlivio-hd-source.tar.xz
           rm -rf /tmp/perlivio-hd
@@ -45,7 +47,6 @@ jobs:
           set -euo pipefail
           git fetch origin main
           git checkout -B main origin/main
-
           cp -L /tmp/perlivio-hd/assets/media/hero-lifestyle.webp assets/media/hero-lifestyle.webp
           cp -L /tmp/perlivio-hd/assets/media/collections-overview.webp assets/media/collections-overview.webp
           cp -L /tmp/perlivio-hd/assets/media/packshot-essentiel.webp assets/media/packshot-essentiel.webp
@@ -54,7 +55,6 @@ jobs:
           cp -L /tmp/perlivio-hd/assets/media/packshot-reserve.webp assets/media/packshot-reserve.webp
           cp -L /tmp/perlivio-hd/assets/media/reserve-lifestyle.webp assets/media/reserve-lifestyle.webp
           cp /tmp/perlivio-hd/assets/beads/*.webp assets/beads/
-
           python - <<'PY'
           from pathlib import Path
           p = Path('index.html')
@@ -67,10 +67,8 @@ jobs:
               raise SystemExit('Hero image reference not found')
           p.write_text(text, encoding='utf-8')
           PY
-
           rm -rf .hd-images-upload .hd-images-upload-v2 .hd-images-direct-v3 .hd-images-source-final
           rm -f .github/workflows/upgrade-hd-images.yml .github/workflows/upgrade-hd-images-v2.yml .github/workflows/install-hd-binary.yml .github/workflows/install-hd-source.yml
-
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
           git add -A
