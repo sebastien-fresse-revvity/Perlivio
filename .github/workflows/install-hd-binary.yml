@@ -1,0 +1,70 @@
+name: Install Perlivio HD image payload
+
+on:
+  push:
+    branches: [hd-images-direct-final]
+    paths:
+      - '.hd-images-direct-v3/READY'
+
+permissions:
+  contents: write
+
+jobs:
+  install:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout payload branch
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Verify and extract HD payload
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -f .hd-images-direct-v3/payload.tar.xz
+          echo '2c122a81fc6aa9e213a9b999220250544faf66792928b9764e2b2f3d13675e53  .hd-images-direct-v3/payload.tar.xz' | sha256sum -c -
+          xz -t .hd-images-direct-v3/payload.tar.xz
+          rm -rf /tmp/perlivio-hd
+          mkdir -p /tmp/perlivio-hd
+          tar -xJf .hd-images-direct-v3/payload.tar.xz -C /tmp/perlivio-hd
+          test -f /tmp/perlivio-hd/assets/media/hero-lifestyle.webp
+          test -f /tmp/perlivio-hd/assets/media/collections-overview.webp
+          test -f /tmp/perlivio-hd/assets/media/packshot-reserve.webp
+          test -f /tmp/perlivio-hd/assets/media/stones-catalogue.webp
+          test "$(find /tmp/perlivio-hd/assets/beads -name '*.webp' -type f | wc -l)" = "18"
+
+      - name: Install verified assets on main
+        shell: bash
+        run: |
+          set -euo pipefail
+          git fetch origin main
+          git checkout -B main origin/main
+
+          cp /tmp/perlivio-hd/assets/media/hero-lifestyle.webp assets/media/hero-lifestyle.webp
+          cp /tmp/perlivio-hd/assets/media/collections-overview.webp assets/media/collections-overview.webp
+          cp /tmp/perlivio-hd/assets/media/packshot-reserve.webp assets/media/packshot-reserve.webp
+          cp /tmp/perlivio-hd/assets/media/packshot-reserve.webp assets/media/reserve-lifestyle.webp
+          cp /tmp/perlivio-hd/assets/media/stones-catalogue.webp assets/media/stones-catalogue.webp
+          cp /tmp/perlivio-hd/assets/beads/*.webp assets/beads/
+
+          python - <<'PY'
+          from pathlib import Path
+          p = Path('index.html')
+          text = p.read_text(encoding='utf-8')
+          old = 'src="assets/media/packshot-signature.webp"'
+          new = 'src="assets/media/hero-lifestyle.webp"'
+          if old not in text:
+              raise SystemExit('Hero image reference not found')
+          p.write_text(text.replace(old, new, 1), encoding='utf-8')
+          PY
+
+          rm -rf .hd-images-upload .hd-images-upload-v2 .hd-images-direct-v3
+          rm -f .github/workflows/upgrade-hd-images.yml .github/workflows/upgrade-hd-images-v2.yml
+
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -A
+          git diff --cached --stat
+          git commit -m 'fix: restore high-quality Perlivio photography'
+          git push origin HEAD:main
