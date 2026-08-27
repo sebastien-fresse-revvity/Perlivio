@@ -25,13 +25,10 @@ jobs:
           for i in 00 01 02; do test -f ".hd-images-source-final/part-$i.bin"; done
           test "$(find .hd-images-source-final -name 'tail-*.b64' -type f | wc -l)" = "8"
           cat .hd-images-source-final/part-00.bin .hd-images-source-final/part-01.bin .hd-images-source-final/part-02.bin > /tmp/perlivio-hd-source.tar.xz
-          for f in $(find .hd-images-source-final -name 'tail-*.b64' -type f | sort); do
-            base64 --decode "$f" >> /tmp/perlivio-hd-source.tar.xz
-          done
+          for f in $(find .hd-images-source-final -name 'tail-*.b64' -type f | sort); do base64 --decode "$f" >> /tmp/perlivio-hd-source.tar.xz; done
           echo 'f372a46d1fd86edc7738d2d183207f150233bdf4bfce3486e31cd475d78f9320  /tmp/perlivio-hd-source.tar.xz' | sha256sum -c -
           xz -t /tmp/perlivio-hd-source.tar.xz
-          rm -rf /tmp/perlivio-hd
-          mkdir -p /tmp/perlivio-hd
+          rm -rf /tmp/perlivio-hd && mkdir -p /tmp/perlivio-hd
           tar -xJf /tmp/perlivio-hd-source.tar.xz -C /tmp/perlivio-hd
           test -f /tmp/perlivio-hd/assets/media/hero-lifestyle.webp
           test -f /tmp/perlivio-hd/assets/media/collections-overview.webp
@@ -57,15 +54,11 @@ jobs:
           cp /tmp/perlivio-hd/assets/beads/*.webp assets/beads/
           python - <<'PY'
           from pathlib import Path
-          p = Path('index.html')
-          text = p.read_text(encoding='utf-8')
-          old = 'src="assets/media/packshot-signature.webp"'
-          new = 'src="assets/media/hero-lifestyle.webp"'
-          if old in text:
-              text = text.replace(old, new, 1)
-          elif new not in text:
-              raise SystemExit('Hero image reference not found')
-          p.write_text(text, encoding='utf-8')
+          p=Path('index.html'); text=p.read_text(encoding='utf-8')
+          old='src="assets/media/packshot-signature.webp"'; new='src="assets/media/hero-lifestyle.webp"'
+          if old in text: text=text.replace(old,new,1)
+          elif new not in text: raise SystemExit('Hero image reference not found')
+          p.write_text(text,encoding='utf-8')
           PY
           rm -rf .hd-images-upload .hd-images-upload-v2 .hd-images-direct-v3 .hd-images-source-final
           rm -f .github/workflows/upgrade-hd-images.yml .github/workflows/upgrade-hd-images-v2.yml .github/workflows/install-hd-binary.yml .github/workflows/install-hd-source.yml
