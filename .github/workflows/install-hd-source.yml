@@ -11,7 +11,6 @@ jobs:
       - uses: actions/checkout@v4
         with: { fetch-depth: 0 }
       - name: Rebuild and verify HD payload
-        shell: bash
         run: |
           set -euo pipefail
           for i in 00 01 02; do test -f ".hd-images-source-final/part-$i.bin"; done
@@ -22,19 +21,11 @@ jobs:
           xz -t /tmp/perlivio-hd-source.tar.xz
           rm -rf /tmp/perlivio-hd && mkdir -p /tmp/perlivio-hd
           tar -xJf /tmp/perlivio-hd-source.tar.xz -C /tmp/perlivio-hd
-          test -f /tmp/perlivio-hd/assets/media/hero-lifestyle.webp
-          test -f /tmp/perlivio-hd/assets/media/collections-overview.webp
-          test -f /tmp/perlivio-hd/assets/media/packshot-essentiel.webp
-          test -f /tmp/perlivio-hd/assets/media/packshot-argent.webp
-          test -f /tmp/perlivio-hd/assets/media/packshot-signature.webp
-          test -f /tmp/perlivio-hd/assets/media/packshot-reserve.webp
           test "$(find /tmp/perlivio-hd/assets/beads -name '*.webp' -type f | wc -l)" = "18"
       - name: Install verified assets on main
-        shell: bash
         run: |
           set -euo pipefail
-          git fetch origin main
-          git checkout -B main origin/main
+          git fetch origin main && git checkout -B main origin/main
           cp -L /tmp/perlivio-hd/assets/media/hero-lifestyle.webp assets/media/hero-lifestyle.webp
           cp -L /tmp/perlivio-hd/assets/media/collections-overview.webp assets/media/collections-overview.webp
           cp -L /tmp/perlivio-hd/assets/media/packshot-essentiel.webp assets/media/packshot-essentiel.webp
@@ -45,16 +36,12 @@ jobs:
           cp /tmp/perlivio-hd/assets/beads/*.webp assets/beads/
           python - <<'PY'
           from pathlib import Path
-          p=Path('index.html'); text=p.read_text(encoding='utf-8')
-          old='src="assets/media/packshot-signature.webp"'; new='src="assets/media/hero-lifestyle.webp"'
-          if old in text: text=text.replace(old,new,1)
-          elif new not in text: raise SystemExit('Hero image reference not found')
-          p.write_text(text,encoding='utf-8')
+          p=Path('index.html'); t=p.read_text(encoding='utf-8'); a='src="assets/media/packshot-signature.webp"'; b='src="assets/media/hero-lifestyle.webp"'
+          if a in t: t=t.replace(a,b,1)
+          elif b not in t: raise SystemExit('Hero image reference not found')
+          p.write_text(t,encoding='utf-8')
           PY
           rm -rf .hd-images-upload .hd-images-upload-v2 .hd-images-direct-v3 .hd-images-source-final
           rm -f .github/workflows/upgrade-hd-images.yml .github/workflows/upgrade-hd-images-v2.yml .github/workflows/install-hd-binary.yml .github/workflows/install-hd-source.yml
-          git config user.name 'github-actions[bot]'
-          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add -A
-          git commit -m 'fix: restore high-quality Perlivio photography'
-          git push origin HEAD:main
+          git config user.name 'github-actions[bot]'; git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -A && git commit -m 'fix: restore high-quality Perlivio photography' && git push origin HEAD:main
