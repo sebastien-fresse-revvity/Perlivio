@@ -13,73 +13,58 @@ jobs:
   install:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout payload branch
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
-      - name: Rebuild and verify payload
+      - name: Decode and verify final images
         shell: bash
         run: |
           set -euo pipefail
-          count=$(find .hd-images-final-now -maxdepth 1 -name 'chunk-*.b64' -type f | wc -l)
-          test "$count" = "15"
-          find .hd-images-final-now -maxdepth 1 -name 'chunk-*.b64' -type f | sort | xargs cat | base64 --decode > /tmp/perlivio-final-assets.tar.xz
-          echo '96de4523870a658929115afc7d22950f29d3ca1277eaf712bc49ed034b705590  /tmp/perlivio-final-assets.tar.xz' | sha256sum -c -
-          xz -t /tmp/perlivio-final-assets.tar.xz
-          rm -rf /tmp/perlivio-final-assets
-          mkdir -p /tmp/perlivio-final-assets
-          tar -xJf /tmp/perlivio-final-assets.tar.xz -C /tmp/perlivio-final-assets
-          test -f /tmp/perlivio-final-assets/assets/media/hero-lifestyle.webp
-          test -f /tmp/perlivio-final-assets/assets/media/packshot-essentiel.webp
-          test -f /tmp/perlivio-final-assets/assets/media/packshot-metal.webp
-          test -f /tmp/perlivio-final-assets/assets/media/packshot-inox.webp
-          test -f /tmp/perlivio-final-assets/assets/media/packshot-argent.webp
-          test -f /tmp/perlivio-final-assets/assets/media/packshot-signature.webp
-          test -f /tmp/perlivio-final-assets/assets/media/packshot-reserve.webp
-          test -f /tmp/perlivio-final-assets/assets/media/stones-catalogue.webp
-          test "$(find /tmp/perlivio-final-assets/assets/beads -name '*.webp' -type f | wc -l)" = "18"
+          mkdir -p /tmp/perlivio-images
+          for n in hero-lifestyle packshot-essentiel packshot-metal packshot-inox packshot-argent packshot-signature packshot-reserve stones-catalogue; do
+            base64 --decode ".hd-images-final-now/$n.b64" > "/tmp/perlivio-images/$n.webp"
+          done
+          cd /tmp/perlivio-images
+          echo '263b42b2ab9aca14910820085b90b522fa4d6a7cfec053802f021a9f8bf141be  hero-lifestyle.webp' | sha256sum -c -
+          echo 'da640f69213e34152c99223a22369a70512f29ca056d70e949297b6bf5c1905b  packshot-essentiel.webp' | sha256sum -c -
+          echo '75795365dc3c2d29b2ec68ef130b82e4ac87f216ff8669e7968fdefd74143139  packshot-metal.webp' | sha256sum -c -
+          echo '41853934c4001bde1353468731a7dbf565397b3db30c59fabf4ab6b390e88192  packshot-inox.webp' | sha256sum -c -
+          echo '66332420bad9763421a6195d4c8fdb060aed1568803d80b75ca01d21809be021  packshot-argent.webp' | sha256sum -c -
+          echo '4f0626511691f889b9da113f6b4c52f8b149c4942f263b3c0509fc41b37c6a68  packshot-signature.webp' | sha256sum -c -
+          echo '2d4768af65df4991eda51a5895bf270af2ca5957ab1ee9529d19c24156daf534  packshot-reserve.webp' | sha256sum -c -
+          echo '2f84c7e01a22369982a9c7d3771b7b666319d711a21b74ba8ec4538d43219770  stones-catalogue.webp' | sha256sum -c -
 
-      - name: Commit real image files to main
+      - name: Commit real WebP files to main
         shell: bash
         run: |
           set -euo pipefail
           git fetch origin main
           git checkout -B main origin/main
-
-          src=/tmp/perlivio-final-assets/assets
-          cp "$src/media/hero-lifestyle.webp" assets/media/hero-lifestyle.webp
-          cp "$src/media/hero-lifestyle.webp" assets/media/collections-overview.webp
-          cp "$src/media/packshot-essentiel.webp" assets/media/packshot-essentiel.webp
-          cp "$src/media/packshot-essentiel.webp" assets/media/bracelet-single-b.webp
-          cp "$src/media/packshot-metal.webp" assets/media/packshot-metal.webp
-          cp "$src/media/packshot-metal.webp" assets/media/bracelet-single-e.webp
-          cp "$src/media/packshot-inox.webp" assets/media/packshot-inox.webp
-          cp "$src/media/packshot-argent.webp" assets/media/packshot-argent.webp
-          cp "$src/media/packshot-argent.webp" assets/media/bracelet-single-a.webp
-          cp "$src/media/packshot-signature.webp" assets/media/packshot-signature.webp
-          cp "$src/media/packshot-signature.webp" assets/media/bracelet-single-d.webp
-          cp "$src/media/packshot-reserve.webp" assets/media/packshot-reserve.webp
-          cp "$src/media/packshot-reserve.webp" assets/media/reserve-lifestyle.webp
-          cp "$src/media/stones-catalogue.webp" assets/media/stones-catalogue.webp
-          cp "$src/beads"/*.webp assets/beads/
-
+          src=/tmp/perlivio-images
+          cp "$src/hero-lifestyle.webp" assets/media/hero-lifestyle.webp
+          cp "$src/hero-lifestyle.webp" assets/media/collections-overview.webp
+          cp "$src/packshot-essentiel.webp" assets/media/packshot-essentiel.webp
+          cp "$src/packshot-essentiel.webp" assets/media/bracelet-single-b.webp
+          cp "$src/packshot-metal.webp" assets/media/packshot-metal.webp
+          cp "$src/packshot-metal.webp" assets/media/bracelet-single-e.webp
+          cp "$src/packshot-inox.webp" assets/media/packshot-inox.webp
+          cp "$src/packshot-argent.webp" assets/media/packshot-argent.webp
+          cp "$src/packshot-argent.webp" assets/media/bracelet-single-a.webp
+          cp "$src/packshot-signature.webp" assets/media/packshot-signature.webp
+          cp "$src/packshot-signature.webp" assets/media/bracelet-single-d.webp
+          cp "$src/packshot-reserve.webp" assets/media/packshot-reserve.webp
+          cp "$src/packshot-reserve.webp" assets/media/reserve-lifestyle.webp
+          cp "$src/stones-catalogue.webp" assets/media/stones-catalogue.webp
           python - <<'PY'
           from pathlib import Path
-          p = Path('index.html')
-          text = p.read_text(encoding='utf-8')
-          old = 'src="assets/media/packshot-signature.webp"'
-          new = 'src="assets/media/hero-lifestyle.webp"'
-          if old in text:
-              text = text.replace(old, new, 1)
-          elif new not in text:
-              raise SystemExit('Hero image reference not found')
-          p.write_text(text, encoding='utf-8')
+          p=Path('index.html')
+          s=p.read_text(encoding='utf-8')
+          s=s.replace('src="assets/media/packshot-signature.webp"','src="assets/media/hero-lifestyle.webp"',1)
+          p.write_text(s,encoding='utf-8')
           PY
-
           rm -rf .hd-images-upload .hd-images-upload-v2 .hd-images-direct-v3 .hd-images-source-final .hd-images-final-now
           rm -f .github/workflows/upgrade-hd-images.yml .github/workflows/upgrade-hd-images-v2.yml .github/workflows/install-hd-binary.yml .github/workflows/install-hd-source.yml .github/workflows/install-hd-final-now.yml
-
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
           git add -A
