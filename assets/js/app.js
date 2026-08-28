@@ -84,10 +84,11 @@
     const stage = document.createElement("div");
     stage.className = `bracelet-stage collection-${collection}`;
     // Geometry is derived from the physical count: 8 mm beads should read as a continuous strand, not isolated marbles.
-    const radius = count >= 18 ? 34.2 : count === 17 ? 33.9 : count === 16 ? 33.6 : 33.1;
-    const beadSize = count >= 18 ? 12.5 : count === 17 ? 13.1 : count === 16 ? 13.8 : count === 15 ? 14.4 : 15;
-    // A wider opening at the bottom leaves room for the real, low-profile opening mechanism.
-    const gapCenter = 90, gapSpan = 46, start = gapCenter + gapSpan/2, span = 360-gapSpan;
+    // Keep 8 mm beads physically separated: the previous radius made 16–18 beads overlap.
+    const radius = 39;
+    const beadSize = count >= 18 ? 12 : count === 17 ? 12.5 : count === 16 ? 13 : count === 15 ? 13.5 : 14;
+    // Preserve a real opening for the low-profile bayonet mechanism instead of hiding it under beads.
+    const gapCenter = 90, gapSpan = 42, start = gapCenter + gapSpan/2, span = 360-gapSpan;
     const spacerSlotsByCollection={metal:[2,7,12],inox:[3,8,13],argent:[1,6,11,15]};
     const spacerSlots=spacerSlotsByCollection[collection] || [];
     comp.list.forEach((slug,index) => {
