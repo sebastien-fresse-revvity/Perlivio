@@ -1,0 +1,53 @@
+name: Regenerate Perlivio visuals
+
+on:
+  push:
+    branches:
+      - fix/replace-broken-site-images
+    paths:
+      - scripts/generate-visuals.py
+      - .github/workflows/regenerate-visuals.yml
+      - assets/beads/**
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  generate:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout audit branch
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref_name }}
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install Pillow
+        run: python -m pip install --disable-pip-version-check pillow
+
+      - name: Generate distinct site visuals and renderer fixes
+        run: python scripts/generate-visuals.py
+
+      - name: Validate JavaScript and local assets
+        run: |
+          node --check assets/js/data.js
+          node --check assets/js/app.js
+          node scripts/validate-site.mjs
+
+      - name: Commit generated visuals
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add assets/media assets/js/app.js assets/css/site.css index.html
+          if git diff --cached --quiet; then
+            echo "No generated changes"
+            exit 0
+          fi
+          git commit -m "fix: regenerate Perlivio site visuals"
+          git push
