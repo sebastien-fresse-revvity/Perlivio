@@ -1,29 +1,37 @@
 PERLIVIO — RAPPORT DE VALIDATION
 
-Version : configurateur UX v4 / liberté guidée
-HTML : 45
-CSS : 1
-JavaScript : 2
-Images de pierres : 18
-Références HTML locales contrôlées : 2723
-Références HTML manquantes : 0
-Références /manus-storage restantes : 0
-Syntaxe assets/js/data.js : OK (node --check)
-Syntaxe assets/js/app.js : OK (node --check)
+Date : 2026-08-27
+Périmètre : audit visuel, navigation, configurateur et médias
 
-Corrections v4 :
-- aperçu mobile compact (84 px) au lieu d'un grand bloc qui masque les choix ;
-- agrandissement volontaire via « Voir en grand » ;
-- une seule tâche lisible par étape ;
-- cartes de gammes horizontales avec aperçu dynamique propre ;
-- suppression des halos / marqueurs sur les pierres ;
-- fermoir cylindrique placé dans une vraie ouverture du bracelet, hors premier plan ;
-- intercalaires décoratifs réduits à deux accents discrets ;
-- répétition libre d'une même pierre avec quantités − / + ;
-- composition libre jusqu'à la capacité physique du bracelet ;
-- Réserve calculée à partir des Socles réellement remplacées ;
-- preview repliée automatiquement lors du passage d'une étape à l'autre.
+CONTRÔLES AUTOMATISÉS
+- 48 pages HTML contrôlées, avec exactement un h1 par page.
+- 2 fichiers JavaScript valides avec node --check.
+- 2 758 références href/src analysées ; aucune référence locale manquante.
+- Aucune référence /manus-storage restante.
+- Aucun bouton actif sans type explicite hors contrôles de menu et de filtre.
+- Aucune image base64 embarquée dans le configurateur.
+- Aucune capacité de bracelet supérieure à 18 perles.
+- git diff --check : aucune erreur d'espacement.
 
-Publication média : visuels WebP haute qualité publiés sur main et hero relié à hero-lifestyle.webp.
+MÉDIAS VALIDÉS
+- 18 perles WebP générées en 256 × 256 avec transparence.
+- 5 packshots de collection reconstruits avec exactement 16 perles rondes de même diamètre.
+- Un seul bracelet par packshot.
+- Fermoir argenté ouvert représenté sur les vues produit non portées, conformément au prototype fourni.
+- Fermoir masqué sur la vue portée.
+- Visuels dédiés pour le porté, la Réserve, le catalogue des pierres et le détail du fermoir.
 
-Le paiement reste volontairement non activé tant que prix, variantes, juridique, délais et matières ne sont pas validés.
+CORRECTIONS PRINCIPALES
+- en-tête desktop sans chevauchement et navigation mobile correctement décalée ;
+- configurateur intégré à l'interface commune, sans assets miniatures embarqués ;
+- tailles ramenées à 14, 16, 17 ou 18 perles selon le poignet ;
+- Socle uniforme ou alterné, Origine, Chemin, Réserve et réorganisation complète ;
+- gamme Signature rendue monochrome dès la sélection ;
+- ancien panier local assaini lorsque son nombre de perles sort de la plage 14–18 ;
+- états sélectionnés et focus clavier rendus explicites ;
+- workflow GitHub ajouté pour rejouer la validation à chaque pull request.
+
+AVANT OUVERTURE COMMERCIALE
+Le paiement reste volontairement désactivé. Prix, variantes, mentions légales,
+délais, matières du fermoir et justificatifs de composition doivent encore être
+validés par Perlivio avant publication commerciale.

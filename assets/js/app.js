@@ -11,7 +11,23 @@
   const siteUrl = (path) => new URL(String(path).replace(/^\//, ""), SITE_ROOT).href;
 
   function getCart(){
-    try { return JSON.parse(localStorage.getItem("perlivio:cart") || "[]"); }
+    try {
+      const cart=JSON.parse(localStorage.getItem("perlivio:cart") || "[]");
+      return Array.isArray(cart) ? cart.filter(item=>item && typeof item==="object").map(item=>{
+        const count=Math.min(18,Math.max(14,Number(item.count)||16));
+        const paths=Array.isArray(item.paths) ? item.paths.filter(slug=>stoneMap[slug]).slice(0,count-1) : [];
+        return {
+          ...item,
+          count,
+          paths,
+          collectionName:item.collectionName || collectionMap[item.collection]?.name || "Essentiel",
+          socleName:item.socleName || stoneMap[item.socle]?.name || "Agate blanche",
+          socle2Name:item.socle2Name || stoneMap[item.socle2]?.name || "",
+          originName:item.originName || stoneMap[item.origin]?.name || "Agate blanche",
+          pathNames:paths.map(slug=>stoneMap[slug]?.name || slug)
+        };
+      }) : [];
+    }
     catch { return []; }
   }
   function saveCart(cart){
@@ -27,15 +43,20 @@
   const toggle = qs("[data-menu-toggle]");
   const mobile = qs("[data-mobile-nav]");
   if(toggle && mobile){
-    toggle.addEventListener("click", () => {
-      const open = mobile.classList.toggle("open");
+    const setMenu=(open)=>{
+      mobile.classList.toggle("open",open);
       toggle.textContent = open ? "×" : "☰";
       toggle.setAttribute("aria-label", open ? "Fermer le menu" : "Ouvrir le menu");
-    });
+      toggle.setAttribute("aria-expanded",String(open));
+    };
+    toggle.setAttribute("aria-expanded", "false");
+    toggle.addEventListener("click", () => setMenu(!mobile.classList.contains("open")));
+    qsa("a",mobile).forEach(link=>link.addEventListener("click",()=>setMenu(false)));
+    document.addEventListener("keydown",event=>{if(event.key==="Escape") setMenu(false);});
   }
 
   function beadCountForWrist(wrist){
-    return wrist === "14–15 cm" ? 14 : wrist === "18–19 cm" ? 18 : wrist === "20–21 cm" ? 20 : 16;
+    return wrist === "14–15 cm" ? 14 : wrist === "18–19 cm" ? 17 : wrist === "20–21 cm" ? 18 : 16;
   }
 
   function compositionFromConfig({count=16,socle="agate-blanche",socle2="",mode="single",origin="agate-blanche",paths=[]}){
@@ -53,28 +74,29 @@
   function renderBracelet(el, cfg={}){
     const collection = cfg.collection || el.dataset.collection || "essentiel";
     const wrist = cfg.wrist || el.dataset.wrist || "16–17 cm";
-    const count = Number(cfg.count || el.dataset.count || beadCountForWrist(wrist));
+    const count = Math.min(18,Math.max(14,Number(cfg.count || el.dataset.count || beadCountForWrist(wrist))));
     const socle = cfg.socle || el.dataset.socle || "agate-blanche";
     const socle2 = cfg.socle2 || el.dataset.socle2 || "";
-    const mode = cfg.mode || el.dataset.socleMode || "single";
+    const mode = cfg.socleMode || cfg.mode || el.dataset.socleMode || "single";
     const origin = cfg.origin || el.dataset.origin || "agate-blanche";
     const paths = Array.isArray(cfg.paths) ? cfg.paths : ((el.dataset.paths || "").split(",").filter(Boolean));
     const comp = compositionFromConfig({count,socle,socle2,mode,origin,paths});
     const stage = document.createElement("div");
     stage.className = `bracelet-stage collection-${collection}`;
     // Geometry is derived from the physical count: 8 mm beads should read as a continuous strand, not isolated marbles.
-    const radius = count >= 20 ? 35.5 : count >= 18 ? 34.5 : count >= 16 ? 33.4 : 32.5;
-    const beadSize = count >= 20 ? 11.4 : count >= 18 ? 12.2 : count >= 16 ? 13.4 : 14.4;
-    // Leave a single, deliberate gap at the bottom for the physical clasp.
-    // The clasp belongs to the bracelet but must never become the focal point.
-    const gapCenter = 90, gapSpan = 28, start = gapCenter + gapSpan/2, span = 360-gapSpan;
+    const radius = count >= 18 ? 34.2 : count === 17 ? 33.9 : count === 16 ? 33.6 : 33.1;
+    const beadSize = count >= 18 ? 12.5 : count === 17 ? 13.1 : count === 16 ? 13.8 : count === 15 ? 14.4 : 15;
+    // A wider opening at the bottom leaves room for the real, low-profile opening mechanism.
+    const gapCenter = 90, gapSpan = 46, start = gapCenter + gapSpan/2, span = 360-gapSpan;
+    const spacerSlotsByCollection={metal:[2,7,12],inox:[3,8,13],argent:[1,6,11,15]};
+    const spacerSlots=spacerSlotsByCollection[collection] || [];
     comp.list.forEach((slug,index) => {
       const s = stoneMap[slug] || stones[0];
       const angle = (start + (span/(Math.max(comp.list.length-1,1))) * index) * Math.PI/180;
       const x = 50 + Math.cos(angle) * radius;
       const y = 50 + Math.sin(angle) * radius;
       const bead=document.createElement("img");
-      bead.src=s.image; bead.alt=""; bead.loading="lazy";
+      bead.src=s.image; bead.alt=""; bead.loading="lazy"; bead.decoding="async";
       bead.className="bracelet-bead";
       if(index===comp.originIndex) bead.classList.add("origin-bead");
       if(comp.pathIndexes.includes(index)) bead.classList.add("path-bead");
@@ -84,30 +106,26 @@
       stage.appendChild(bead);
 
       // Decorative intercalaires are deliberately sparse: stones remain the visual priority.
-      const spacerSlots = [];
       if(spacerSlots.includes(index) && index < comp.list.length-1){
         const nextAngle = (start + (span/(Math.max(comp.list.length-1,1))) * (index+.5)) * Math.PI/180;
-        const spacer=document.createElement("img");
-        spacer.alt=""; spacer.loading="lazy"; spacer.className="bracelet-spacer";
-        spacer.src=siteUrl(`assets/media/spacer-${collection === "metal" ? "metal" : collection === "inox" ? "inox" : collection === "argent" ? "argent" : "signature"}.png`);
-        spacer.style.left=`${50+Math.cos(nextAngle)*radius}%`; spacer.style.top=`${49+Math.sin(nextAngle)*radius}%`;
+        const spacer=document.createElement("span");
+        spacer.setAttribute("aria-hidden","true"); spacer.className=`bracelet-spacer spacer-${collection}`;
+        spacer.style.left=`${50+Math.cos(nextAngle)*radius}%`; spacer.style.top=`${50+Math.sin(nextAngle)*radius}%`;
+        spacer.style.transform=`translate(-50%,-50%) rotate(${nextAngle*180/Math.PI+90}deg)`;
         stage.appendChild(spacer);
       }
     });
-    const clasp=document.createElement('div');
+    const clasp=document.createElement('img');
     clasp.setAttribute('aria-hidden','true');
     clasp.className='bracelet-clasp';
-    const claspX = 50;
-    const claspY = 50 + radius * 0.98;
-    clasp.style.left = `${claspX}%`;
-    clasp.style.top = `${claspY}%`;
-    clasp.style.width = `${Math.max(8.6, beadSize * 0.92)}%`;
+    clasp.alt=''; clasp.decoding='async'; clasp.src=siteUrl('assets/media/clasp-cutout.webp');
     stage.appendChild(clasp);
     el.innerHTML="";
     el.appendChild(stage);
   }
 
   qsa("[data-bracelet]").forEach(el => renderBracelet(el));
+  qsa("img").forEach(img=>{img.decoding="async";});
 
   // Stones catalog
   const stoneSearch=qs("[data-stone-search]");
@@ -135,15 +153,18 @@
     const params=new URLSearchParams(location.search);
     const requestedCollection=params.get("collection");
     const requestedPath=params.get("path");
+    const initialCollection=collectionMap[requestedCollection] || collectionMap.essentiel || collections[0];
+    const secondarySocle={essentiel:"howlite",metal:"oeil-de-tigre",inox:"howlite",argent:"amethyste",signature:"onyx-noir"};
+    const defaultOriginFor=(collection)=>collection?.slug==="signature" ? collection.socle : collection?.origin;
     const state={
       step:1,
-      collection:collectionMap[requestedCollection] ? requestedCollection : "essentiel",
+      collection:initialCollection?.slug || "essentiel",
       wrist:"16–17 cm",
       count:16,
-      socle:"agate-blanche",
-      socle2:"howlite",
+      socle:initialCollection?.socle || "agate-blanche",
+      socle2:secondarySocle[initialCollection?.slug] || "howlite",
       socleMode:"single",
-      origin:"agate-blanche",
+      origin:defaultOriginFor(initialCollection) || "agate-blanche",
       journey: requestedPath && stoneMap[requestedPath] ? "started" : "simple",
       paths: requestedPath && stoneMap[requestedPath] ? [requestedPath] : []
     };
@@ -163,6 +184,13 @@
 
     function pathCapacity(){ return Math.max(0,state.count-1); }
     function quantityOf(slug){ return state.paths.reduce((n,s)=>n+(s===slug?1:0),0); }
+    function buildStonePicker(root){
+      if(!root) return;
+      root.innerHTML=stones.map(s=>`<button class="bead-choice" type="button" data-stone="${s.slug}" aria-label="Choisir ${s.name}"><img src="${s.image}" alt="" loading="lazy" decoding="async"><span>${s.name}</span></button>`).join("");
+    }
+    buildStonePicker(qs("[data-socle-picker]",composer));
+    buildStonePicker(qs("[data-socle2-picker]",composer));
+    buildStonePicker(qs("[data-origin-picker]",composer));
     function journeyCopy(){
       if(state.journey==="free") return "Mode libre : ajoutez autant de répétitions que vous le souhaitez et réordonnez vos Perles de Chemin. La Perle Origine reste votre repère de départ, toutes les autres places peuvent évoluer.";
       if(state.journey==="started") return "Votre histoire a déjà commencé : ajoutez toutes les étapes que vous souhaitez, sans plafond commercial artificiel.";
@@ -170,7 +198,7 @@
     }
     function buildPathPicker(){
       if(!pathPicker) return;
-      pathPicker.innerHTML=stones.map(s=>`<article class="path-quantity-card" data-path-card="${s.slug}" data-name="${s.name.toLowerCase()}"><img src="${s.image}" alt="${s.name}" loading="lazy"><div class="path-card-copy"><strong>${s.name}</strong><small>${s.family || "Pierre Perlivio"}</small></div><div class="qty-controls"><button type="button" data-path-minus="${s.slug}" aria-label="Retirer une ${s.name}">−</button><output data-path-qty="${s.slug}">0</output><button type="button" data-path-plus="${s.slug}" aria-label="Ajouter une ${s.name}">+</button></div></article>`).join("");
+      pathPicker.innerHTML=stones.map(s=>`<article class="path-quantity-card" data-path-card="${s.slug}" data-name="${s.name.toLowerCase()}"><img src="${s.image}" alt="${s.name}" loading="lazy" decoding="async"><div class="path-card-copy"><strong>${s.name}</strong><small>${s.family || "Pierre Perlivio"}</small></div><div class="qty-controls"><button type="button" data-path-minus="${s.slug}" aria-label="Retirer une ${s.name}">−</button><output data-path-qty="${s.slug}">0</output><button type="button" data-path-plus="${s.slug}" aria-label="Ajouter une ${s.name}">+</button></div></article>`).join("");
       qsa("[data-path-plus]",pathPicker).forEach(b=>b.addEventListener("click",()=>{
         if(state.paths.length>=pathCapacity()) return;
         state.paths.push(b.dataset.pathPlus); refresh();
@@ -189,7 +217,16 @@
       const offset=mobile ? 108 : 135;
       window.scrollTo({top:Math.max(0,active.getBoundingClientRect().top+window.scrollY-offset),behavior:"smooth"});
     }
+    function markPressed(selector,isActive){
+      qsa(selector,composer).forEach(button=>{
+        const active=Boolean(isActive(button));
+        button.classList.toggle("active",active);
+        button.setAttribute("aria-pressed",String(active));
+      });
+    }
     function refresh(){
+      const signatureMode=state.collection==="signature";
+      if(signatureMode) state.origin=state.socle;
       if(state.paths.length>pathCapacity()) state.paths=state.paths.slice(0,pathCapacity());
       steps.forEach(s => s.classList.toggle("active",Number(s.dataset.step)===state.step));
       qs("[data-step-current]",composer).textContent=String(state.step);
@@ -202,14 +239,19 @@
       qs("[data-summary-count]",composer).textContent=String(state.count);
       qs("[data-summary-reserve]",composer).textContent=String(state.paths.length);
       renderBracelet(mount,state);
-      qsa("[data-collection-choice]",composer).forEach(b=>b.classList.toggle("active",b.dataset.collectionChoice===state.collection));
-      qsa("[data-wrist]",composer).forEach(b=>b.classList.toggle("active",b.dataset.wrist===state.wrist));
-      qsa("[data-socle-mode]",composer).forEach(b=>b.classList.toggle("active",b.dataset.socleMode===state.socleMode));
+      markPressed("[data-collection-choice]",b=>b.dataset.collectionChoice===state.collection);
+      markPressed("[data-wrist]",b=>b.dataset.wrist===state.wrist);
+      markPressed("[data-socle-mode]",b=>b.dataset.socleMode===state.socleMode);
       const sec=qs("[data-secondary-socle]",composer); if(sec) sec.hidden=state.socleMode!=="alternate";
-      qsa("[data-socle-picker] [data-stone]",composer).forEach(b=>b.classList.toggle("active",b.dataset.stone===state.socle));
-      qsa("[data-socle2-picker] [data-stone]",composer).forEach(b=>b.classList.toggle("active",b.dataset.stone===state.socle2));
-      qsa("[data-origin-picker] [data-stone]",composer).forEach(b=>b.classList.toggle("active",b.dataset.stone===state.origin));
-      qsa("[data-journey]",composer).forEach(b=>b.classList.toggle("active",b.dataset.journey===state.journey));
+      markPressed("[data-socle-picker] [data-stone]",b=>b.dataset.stone===state.socle);
+      markPressed("[data-socle2-picker] [data-stone]",b=>b.dataset.stone===state.socle2);
+      markPressed("[data-origin-picker] [data-stone]",b=>b.dataset.stone===state.origin);
+      qsa("[data-origin-picker] [data-stone]",composer).forEach(button=>button.disabled=signatureMode);
+      const originGuidance=qs("[data-origin-guidance]",composer);
+      if(originGuidance) originGuidance.textContent=signatureMode
+        ? "Signature commence volontairement monochrome : la Perle Origine reprend la pierre Socle, avec le même diamètre de 8 mm."
+        : "Une suggestion cohérente avec votre gamme est proposée par défaut. La Perle Origine garde le même diamètre de 8 mm que les autres.";
+      markPressed("[data-journey]",b=>b.dataset.journey===state.journey);
       const journeyNote=qs("[data-journey-note]",composer); if(journeyNote) journeyNote.textContent=journeyCopy();
 
       const capacity=pathCapacity(), used=state.paths.length, remaining=Math.max(0,capacity-used);
@@ -227,7 +269,7 @@
       }
       const orderEl=qs('[data-path-order]',composer);
       if(orderEl){
-        orderEl.innerHTML = used ? `<div class="path-order-head"><strong>Ordre sur le bracelet</strong><span>Glissez sur ordinateur ou utilisez les flèches.</span></div>` + state.paths.map((slug,index)=>`<div class="path-order-item" draggable="true" data-order-index="${index}"><span class="drag-handle" aria-hidden="true">⋮⋮</span><img src="${stoneMap[slug]?.image || ''}" alt=""><div class="path-order-copy"><strong>${stoneMap[slug]?.name || slug}</strong><small>Position ${index+1}</small></div><div class="path-order-actions"><button type="button" data-order-left="${index}" ${index===0?'disabled':''} aria-label="Déplacer vers la gauche">←</button><button type="button" data-order-right="${index}" ${index===state.paths.length-1?'disabled':''} aria-label="Déplacer vers la droite">→</button><button type="button" data-order-remove="${index}" aria-label="Retirer">×</button></div></div>`).join('') : '';
+        orderEl.innerHTML = used ? `<div class="path-order-head"><strong>Ordre sur le bracelet</strong><span>Glissez sur ordinateur ou utilisez les flèches.</span></div>` + state.paths.map((slug,index)=>`<div class="path-order-item" draggable="true" data-order-index="${index}"><span class="drag-handle" aria-hidden="true">⋮⋮</span><img src="${stoneMap[slug]?.image || ''}" alt="" decoding="async"><div class="path-order-copy"><strong>${stoneMap[slug]?.name || slug}</strong><small>Position ${index+1}</small></div><div class="path-order-actions"><button type="button" data-order-left="${index}" ${index===0?'disabled':''} aria-label="Déplacer vers la gauche">←</button><button type="button" data-order-right="${index}" ${index===state.paths.length-1?'disabled':''} aria-label="Déplacer vers la droite">→</button><button type="button" data-order-remove="${index}" aria-label="Retirer">×</button></div></div>`).join('') : '';
         qsa('[data-order-left]',orderEl).forEach(btn=>btn.addEventListener('click',()=>{const i=Number(btn.dataset.orderLeft); if(i>0){[state.paths[i-1],state.paths[i]]=[state.paths[i],state.paths[i-1]]; refresh();}}));
         qsa('[data-order-right]',orderEl).forEach(btn=>btn.addEventListener('click',()=>{const i=Number(btn.dataset.orderRight); if(i<state.paths.length-1){[state.paths[i],state.paths[i+1]]=[state.paths[i+1],state.paths[i]]; refresh();}}));
         qsa('[data-order-remove]',orderEl).forEach(btn=>btn.addEventListener('click',()=>{const i=Number(btn.dataset.orderRemove); state.paths.splice(i,1); refresh();}));
@@ -241,7 +283,7 @@
         });
       }
       const reserve=qs("[data-reserve-explain]",composer);
-      if(reserve) reserve.textContent=used ? `${used} Perle${used>1?"s":""} Socle${used>1?"s":""} remplacée${used>1?"s":""} rejoindra${used>1?"ont":""} votre Réserve. Vous pourrez les réutiliser plus tard.` : "Aucune Socle n’est remplacée pour l’instant : votre Réserve commence vide.";
+      if(reserve) reserve.textContent=used ? `${used} Perle${used>1?"s":""} Socle${used>1?"s":""} remplacée${used>1?"s":""} ${used>1?"rejoindront":"rejoindra"} votre Réserve. Vous pourrez les réutiliser plus tard.` : "Aucune Socle n’est remplacée pour l’instant : votre Réserve commence vide.";
 
       const recap=qs("[data-composer-recap]",composer);
       if(recap){
@@ -265,10 +307,17 @@
       const value=pathSearch.value.trim().toLowerCase();
       qsa("[data-path-card]",composer).forEach(card=>card.hidden=!!value && !(card.dataset.name||"").includes(value));
     });
-    qsa("[data-collection-choice]",composer).forEach(b=>b.addEventListener("click",()=>{state.collection=b.dataset.collectionChoice;refresh();}));
-    qsa("[data-wrist]",composer).forEach(b=>b.addEventListener("click",()=>{state.wrist=b.dataset.wrist;state.count=Number(b.dataset.count);refresh();}));
+    qsa("[data-collection-choice]",composer).forEach(b=>b.addEventListener("click",()=>{
+      state.collection=b.dataset.collectionChoice;
+      const selected=collectionMap[state.collection];
+      state.socle=selected?.socle || state.socle;
+      state.socle2=secondarySocle[state.collection] || state.socle2;
+      state.origin=defaultOriginFor(selected) || state.origin;
+      refresh();
+    }));
+    qsa("[data-wrist]",composer).forEach(b=>b.addEventListener("click",()=>{state.wrist=b.dataset.wrist;state.count=Math.min(18,Number(b.dataset.count));state.paths=state.paths.slice(0,state.count-1);refresh();}));
     qsa("[data-socle-mode]",composer).forEach(b=>b.addEventListener("click",()=>{state.socleMode=b.dataset.socleMode;refresh();}));
-    qsa("[data-socle-picker] [data-stone]",composer).forEach(b=>b.addEventListener("click",()=>{state.socle=b.dataset.stone;refresh();}));
+    qsa("[data-socle-picker] [data-stone]",composer).forEach(b=>b.addEventListener("click",()=>{state.socle=b.dataset.stone;if(state.collection==="signature")state.origin=state.socle;refresh();}));
     qsa("[data-socle2-picker] [data-stone]",composer).forEach(b=>b.addEventListener("click",()=>{state.socle2=b.dataset.stone;refresh();}));
     qsa("[data-origin-picker] [data-stone]",composer).forEach(b=>b.addEventListener("click",()=>{state.origin=b.dataset.stone;refresh();}));
     qsa("[data-journey]",composer).forEach(b=>b.addEventListener("click",()=>{state.journey=b.dataset.journey;refresh();}));
@@ -293,7 +342,7 @@
           <div class="cart-bracelet"><div data-cart-bracelet="${item.id}"></div></div>
           <div><p class="kicker">Perlivio ${item.collectionName}</p><h2>${item.socleMode==="alternate" ? item.socleName+" + "+item.socle2Name : item.socleName}</h2>
             <dl><div><dt>Poignet</dt><dd>${item.wrist}</dd></div><div><dt>Pierres</dt><dd>${item.count}</dd></div><div><dt>Origine</dt><dd>${item.originName}</dd></div><div><dt>Chemin</dt><dd>${item.pathNames.length ? item.pathNames.join(" · ") : "Aucune au départ"}</dd></div><div><dt>Réserve</dt><dd>${item.paths.length} Socle(s) remplacée(s)</dd></div></dl>
-            <button class="text-link danger" data-remove-cart="${item.id}">Retirer</button>
+            <button class="text-link danger" type="button" data-remove-cart="${item.id}">Retirer</button>
           </div>
         </article>`).join("");
       cart.forEach(item=>{

@@ -1,1 +1,178 @@
-<!doctype html><html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>Composer mon bracelet — Perlivio</title><style>*{box-sizing:border-box}body{margin:0;background:#fbfaf7;color:#12233f;font-family:Arial,sans-serif}.top{position:sticky;top:0;z-index:20;background:#fff;border-bottom:1px solid #e8e1d7;padding:16px;display:flex;justify-content:space-between;align-items:center}.brand{font:700 24px Georgia,serif;letter-spacing:.2em}.cart{width:44px;height:44px;border-radius:50%;background:#12233f;color:#fff;display:grid;place-items:center}main{max-width:1100px;margin:auto;padding:22px 14px 110px}h1,h2{font-family:Georgia,serif;font-weight:500}h1{font-size:clamp(34px,6vw,60px);line-height:.98;margin:10px 0}h2{font-size:30px;margin:0 0 8px}.muted,.step>p{color:#667085;line-height:1.55}.layout{display:grid;grid-template-columns:380px 1fr;gap:20px;align-items:start}.card,.panel{background:#fff;border:1px solid #e7e0d6;border-radius:24px;box-shadow:0 14px 40px #12233f18}.card{position:sticky;top:86px;padding:14px}.stagebox{aspect-ratio:1;display:grid;place-items:center;background:radial-gradient(circle,#fff,#f5efe5 65%,#eadfce);border-radius:18px;overflow:hidden}.bracelet{position:relative;width:88%;aspect-ratio:1}.bead{position:absolute;transform:translate(-50%,-50%);width:14%;aspect-ratio:1;border-radius:50%;object-fit:cover;filter:drop-shadow(0 3px 4px #12233f2b)}.clasp{position:absolute;transform:translate(-50%,-50%);width:10%;aspect-ratio:1;border-radius:50%;background:radial-gradient(circle at 35% 30%,#fff 0 18%,#e6eaee 34%,#aab4bf 68%,#f2f4f6 100%);box-shadow:0 2px 5px #12233f33}.summary{padding:10px 4px 0}.summary b{display:block}.summary span{color:#667085;font-size:12px}.panel{padding:22px;min-width:0}.progress{display:grid;grid-template-columns:auto 1fr auto;gap:10px;align-items:center;color:#667085;font-size:12px;margin-bottom:20px}.bar{height:5px;background:#eee8df;border-radius:99px;overflow:hidden}.bar i{display:block;height:100%;background:#12233f}.step{display:none}.step.active{display:block}.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}.choice,.stone{border:1px solid #e3ded6;background:#fff;border-radius:14px;padding:12px;text-align:left}.choice.active,.stone.active{outline:2px solid #12233f;outline-offset:-2px}.choice small{display:block;color:#667085;margin-top:4px}.stones{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}.stone{padding:7px;text-align:center}.stone img{width:100%;aspect-ratio:1;border-radius:50%;object-fit:cover}.stone span{display:block;font-size:11px;margin-top:5px}.paths{display:grid;gap:7px}.prow{display:grid;grid-template-columns:42px 1fr auto;gap:9px;align-items:center;border:1px solid #e3ded6;border-radius:12px;padding:8px}.prow img,.sel img{width:42px;height:42px;border-radius:50%}.qty,.reorder{display:flex;gap:4px;align-items:center}.qty button,.reorder button{width:32px;height:32px;border:1px solid #ddd5ca;border-radius:9px;background:#fff;font-weight:700}.selected{display:grid;gap:7px;margin-top:14px}.sel{display:grid;grid-template-columns:20px 42px 1fr auto;gap:8px;align-items:center;background:#f8f4ec;padding:8px;border-radius:12px}.nav{position:sticky;bottom:0;display:flex;gap:10px;background:#fffc;margin:20px -22px -22px;padding:14px 22px;border-top:1px solid #e7e0d6;backdrop-filter:blur(10px)}.nav button{min-height:50px;border-radius:999px;padding:0 22px;font-weight:700}.back{background:#fff;border:1px solid #bfc5cd}.next{background:#12233f;color:#fff;border:0;flex:1}.recap div{display:flex;justify-content:space-between;gap:10px;padding:10px 0;border-bottom:1px solid #eee8df}.recap span{color:#667085}@media(max-width:760px){main{padding:14px 10px 100px}.layout{display:flex;flex-direction:column;gap:10px}.card{top:76px;width:100%;padding:8px;display:grid;grid-template-columns:82px 1fr;gap:10px;align-items:center;border-radius:18px}.stagebox{width:82px;height:82px;border-radius:14px}.bracelet{width:78px;height:78px}.bead{width:18%}.clasp{width:13%}.summary{padding:0}.summary b{font-size:13px}.summary span{font-size:11px}.panel{padding:16px 12px;border-radius:18px}.stones{grid-template-columns:repeat(3,minmax(0,1fr))}.grid{grid-template-columns:1fr 1fr}.nav{margin:18px -12px -16px;padding:12px}.sel{grid-template-columns:16px 36px 1fr auto}.sel img{width:36px;height:36px}.reorder button{width:30px;height:30px}}@media(max-width:390px){.grid{grid-template-columns:1fr}}</style></head><body><header class="top"><span>☰</span><div class="brand">PERLIVIO</div><div class="cart">0</div></header><main><p class="muted">Créer mon bracelet Perlivio</p><h1>Votre bracelet,<br>votre point de départ.</h1><p class="muted">Bracelet entièrement visible, fermoir intégré et aucun débordement mobile.</p><div class="layout"><aside class="card"><div class="stagebox"><div class="bracelet" id="bracelet"></div></div><div class="summary"><b id="sum"></b><span><b id="cnt"></b> perles maximum · <b id="res"></b> en Réserve</span></div></aside><section class="panel"><div class="progress"><span>Étape <b id="sn">1</b>/7</span><div class="bar"><i id="bar"></i></div><span id="st">Gamme</span></div><div class="step active" data-step="1"><h2>Quelle gamme ?</h2><p>Le principe reste identique, seule l’allure change.</p><div class="grid" id="cols"></div></div><div class="step" data-step="2"><h2>Quelle taille ?</h2><p>Pour 16–17 cm : 16 perles maximum. Le fermoir occupe sa propre place et n’est jamais superposé.</p><div class="grid" id="sizes"></div></div><div class="step" data-step="3"><h2>Perles Socles</h2><p>Le bracelet est complet dès le départ.</p><div class="stones" id="socles"></div></div><div class="step" data-step="4"><h2>Perle Origine</h2><p>Un repère discret, à la même échelle que les autres pierres.</p><div class="stones" id="origins"></div></div><div class="step" data-step="5"><h2>Votre parcours</h2><p>Choisissez le niveau de guidage.</p><div class="grid" id="modes"></div></div><div class="step" data-step="6"><h2>Perles de Chemin</h2><p>Ajoutez, retirez et réordonnez librement.</p><div class="paths" id="paths"></div><div class="selected" id="selected"></div></div><div class="step" data-step="7"><h2>Votre composition</h2><p>Les Socles remplacées rejoignent la Réserve.</p><div class="recap" id="recap"></div></div><div class="nav"><button class="back" id="back">Retour</button><button class="next" id="next">Continuer</button></div></section></div></main><script>const IMG={"agate-blanche":"data:image/webp;base64,UklGRnQAAABXRUJQVlA4IGgAAACwBQCdASooACgAPvVmqlAqpaQiuNksAVAeiWkAAOiQBkZ8/TmLGrZM7UH7DsZeeG6fHMPKIIAA/vdzF/zC26byBIgw4+cjPSTVGLPPG0SBnADI2fSMUAduiJ2dmKMY7wgBI/m+ZQAAAA==","howlite":"data:image/webp;base64,UklGRpoAAABXRUJQVlA4II4AAADQBgCdASooACgAPxGEuFesKCUjo4kBgCIJaQAA5+9bTcntAOcMJrqui2eN459bUcu7vqq7+idudiCjIYCtUAAA/vkT3rf8pxExDVJEi/EqDU5TyzU3HgNi68qZKBfM3gSqD3/UjjR4pPQ7yQ0bOr4OWPY0YMKymrGkWLaUTrmjInZp1V+oI5XfC3E1gAAA","quartz-clair":"data:image/webp;base64,UklGRooAAABXRUJQVlA4IH4AAAAwBgCdASooACgAPxF6slGwqCSiqrqsAhAiCWcA09gm0gIhcY8m2bMWgQ3jzqbBpPWR/4fdd3DE1UswAP70G//ye/IkHYEhfuAUYzJXlz0QR8HKRCsHh1OVE9JAs0whilDUIFmbmd/iq9E4bRmes9UTL37RDgyMvSIemsAAAAA=","agate-brin-dentelle":"data:image/webp;base64,UklGRqwAAABXRUJQVlA4IKAAAABQBwCdASooACgAPxF4tlWsJqSjKrVZWYAiCWcA05w2ogIhKFoOSa0XRzoyw+puJmq365Ba1upTx+9KUTrwLviLYoAAAP72gv/zV5qvzs+MTqa2JMXpsGecakNIEe0EiKCukuBY1S/wJ6mD7lU/iBTclm0EMsDVD4XVdSZZI332mqCHMh0Ts5J9tpGM0J+0s4T0/oh7h4/HUIVRKxOyF7gA","aventurine-verte":"data:image/webp;base64,UklGRqIAAABXRUJQVlA4IJYAAAAwBwCdASooACgAPxFyrVAsJqQirisxgCIJZwDOdB4ICJFyJ1Z+qZBK3oTZIrlK++0O4FJLLohgW6Lesz14Uc7TliAA/vC9/+V5WbXiMrBXX8wa9qQAIooXpln1c+1qOE3hbK9dBiS2XbHLhp+aL9Cwc191Vrc1h/8zeejywBvWS6Q8cQl6+b5b+yrVEVR8X5ogKVUSiAA=","agate-verte":"data:image/webp;base64,UklGRs4AAABXRUJQVlA4IMIAAAAQBwCdASooACgAPxF8s1IsKCSjrjv4AYAiCWUAz2QWbWgj1BgsbIxlxIWK++N7OIwiqZUU40WS+wHirklcYV94AAD+8L3/xfuTeIrQ89KmKln49UqQFh+hWIjBURz3ukDOuFQ60h1EuYiC75TsZxXC8SkOqxTtlZL/rcvbZpRf93HsFYuaG2dXQ+ju7y7k6Gbn9/aKq8RGFm+gc81hX7sOMZGf9ra47BjGnujwco3Xg7hPa4QnUs97tTVjyjlC7oAAAA==","oeil-de-tigre":"data:image/webp;base64,UklGRtQAAABXRUJQVlA4IMgAAABwBgCdASooACgAPxF6s1UsJyQjJzgMkYAiCUASoACPcyvfWj6n79YlwSLQPlgHD2nChOlYZmG/TTaUm8AA/vdzF/Jp4b7cal49s9jsb+T+w/VrKQomx+iHMQoXk8zQ3H2k+uAx/ryCXIzi4EmTC7S/mNBlAe1zdzSY3w7ILJIDTQ/7VrEOjfZLuWs/ZDahd7oAX5UcI/a76JZDvjFsBFWmTc7ZQWX5PU8+Jc3DI/tsgnsToM+IePNIW0QNLtN5IOewx9+BDAAAAA==","jaspe":"data:image/webp;base64,UklGRq4AAABXRUJQVlA4IKIAAACwBgCdASooACgAPxF8s1asJyQjpzgKSYAiCWUA0jQvJANAriVcGAInKZLvpaIhPtOXWIOQ/yzQsJp5+cNhAAD+93MX/EJzY5vLCkkEo6+PTpbNSCuEQdSW5V9wxvOnTTQienOz+DEIICm+5ebGJqqamq5NeZEidCJtie/6pSRWI0TT5ySAN/5dqjjdZEXqp0yn17kPMNnybG+e/e/ARpJ0kAA=","gres-or":"data:image/webp;base64,UklGRroAAABXRUJQVlA4IK4AAACwBgCdASooACgAPxF4tVMsJyUiqrVcAYAiCUAZ1HqQeCyQPUf8yiOMJ54Eb8l3ZpYCAflEAWvdKjIyR9RB4AD+93g11fwy6YnyEHbZ9jd0wDN0t/wNh9nnsNcDhTw/gK+JoHk4R7jimcU5jfmwv08A2L19bbGZRPP4PhifW+hTfqWsPqu3BAU3VsUGJydnPA4uy5xomblXR4DBTIFdprdOh8AAhILiGwa6b8aAAAA=","lapis-lazuli":"data:image/webp;base64,UklGRtAAAABXRUJQVlA4IMQAAAAQBwCdASooACgAPxGEuVasKCWjo4oBgCIJZQDRgFzbFxhhsTuVMkZTtjL82DskzCP61YWNIG59xpAy+x6oq4Md8AD++cGJnBb9zf7kdOpCoPF8UlM6E9DK3awGOSzU9Cd5qDvYqj6HKsHMHpNDcoL7o1JJV7m6Wvn0tKcESVHafS/51lERXMGneazf4ag11c8byGUrPb5mvb+2Igtg7TMr0K9igQ/hOIzCPrQY1T26P+ezq+IT8dnLJM17ZVN3WUiLwAAA","sodalite":"data:image/webp;base64,UklGRs4AAABXRUJQVlA4IMIAAACQBgCdASooACgAPxGAtVUsKCSjI4z5gCIJZwDPoDURKB+0+xs9iRBM1N2Qlpx9/KHblb4EqCLnKfLtaxAAAP73eDXV/Y5hDfVKoSLuNuwzmDbbTMm+nKmau4hgwJ1NL2NT6BUWadcgt+5KjSgSsZrf9KsPt3D/6DOAptDXocprN9urfmSqf3w3GUtfWLkp2NRr0NrYsG8K5PsrkoU+tW9OK78dSaTiqRuQXbRGa6lz7TRuJXo1ITTmZVx9u+cCdRAAAA==","gres-bleu":"data:image/webp;base64,UklGRpgAAABXRUJQVlA4IIwAAABQBgCdASooACgAPxF4tFIsJyUirjQLMYAiCWcA05wmbWXJYQomeP0q9IGWM06scMdFmjVZ4SXPBdESAAD+9Bsn7sEh3y575weyPXgIwLfpy4m8r2+GFDzxnq6UqZxvz00rIAPtMst/4ZwafKSGCWo+c69n9ArzMaElsb9u6AqbeAOYKE59uQ2EkAAAAA==","onyx-noir":"data:image/webp;base64,UklGRs4AAABXRUJQVlA4IMIAAADwBgCdASooACgAPxF8tlYsJySjpzgKSYAiCWkAAH8sW4j70eNqe0cApaFjoaSFN4p+m9A2+n4hl4RDt5N2dgxUAP72gv/Kv2bOqCPGahlonc7SbxGWtKk10/3eTC4sTMbLJE9bbmArQCIheg4hcDzLvlIAqB0WeCpOjOpoXbA96F+Rk15LkhTj3kgF3nLXoDwHfL4npYuYh/n4aSjSbCRs9EQNppnYvOje7XSeUQDB6D2Qt7hUwF8zvL7//0P/sIAAAA==","obsidienne-or":"data:image/webp;base64,UklGRtIAAABXRUJQVlA4IMYAAABwBwCdASooACgAPxFyt1QsJiUjKrqpWYAiCWcAzUg2onoHHoMKUip0BxCz54IPj717mzFt7MeMj8FcKsf3oMFj5eQ2gAD+9ovA/qBUvQhv8PvG5bStnUcxkYjncAa4CaSyH1qgdLfZoJScTzkXuEhdc69+5Ri13lE+NIiZkFZ765TU9TjTU3Bhc01Mix288aY68roc1jneR94pcQemE8tIaJqu7DEScpcYEXLKXML07Nq1W9vqqfa/cCJWY/pol5q8BwmXgAA=","agate-rouge":"data:image/webp;base64,UklGRt4AAABXRUJQVlA4INIAAABQBwCdASooACgAPxF8tVQsJ6SorjQIAYAiCWQAzfwmbUSK2E6/qQpPuvDBcgBybBs0G8hS5RZrcXHgqBlHeLl6gGwAAP70It7812xlWBFa/IaDh0O2Q1VnssOKDovLsFK4s9NoBpJlBx/tvpsvBWObixSiL6LAes+ijozsP9lydMlKtm5lvzb7gHsLB3ryCQw04lMOIO172RcwFGTh/ni3mB4lDRxwBqXNFh+ZdQK5L9srps1PzjlgP4f4ofdIPd8BzGEgwVoBwp/sL2hjBygAAAA=","quartz-rose":"data:image/webp;base64,UklGRowAAABXRUJQVlA4IIAAAAAQBwCdASooACgAPxFsrFEsJSQirjv7MYAiCWUA0BgWbWgj3+dl52zctMJ4rea0VcwUoXTblxlqQrMye9nDcwIkAAD+8L3/hVeW8n+FflGLnHFRglNYgDgJdIVfqbeyNfizkPGVcR4EAk0CUwoNZ1NrPjEvS62y/1RROWeL2rHAAA=","amethyste":"data:image/webp;base64,UklGRsYAAABXRUJQVlA4ILoAAADwBgCdASooACgAPxGAulWsKCWko4sBgCIJZwAAapBO7TWGLT4vmHeZLHurG/8KNyOmnZygjskcLKY68XNywCwAAP71ciP8qcltHVnHpxMvgRmgds8vlWRXuGsfrlUe8hm9rsSiKw3gzqN4cYsE5T7BQLSdXI6B4i2ceDUDu3ef2rQFV56lhMIpZJFVjA8MjDjFNstF1KxbakoVTQgk8Nien7b/Lfo3Mc95Jy89h6vzLzKevdNba+BoAAA=","aventurine-jaune":"data:image/webp;base64,UklGRpwAAABXRUJQVlA4IJAAAADQBQCdASooACgAPxF2r1GsJyQirigBgCIJQBnWA8EBEKKWVIsO0lrXeGDY6ApOPRddRMfWQAAAAP7wvLfrVNP+CMhpGida3AxrY6vZorZGdwrUfEG7DI3d9X1DWtCbdynnGMCwNMAful41UwSV9xbQ0P5w642rzUsYjRVGfHHxsWG2stMpnCS7jz1DF4UAAAA="};const N={"agate-blanche":"Agate blanche","howlite":"Howlite","quartz-clair":"Quartz clair","agate-brin-dentelle":"Agate brin dentelle","aventurine-verte":"Aventurine verte","agate-verte":"Agate verte","oeil-de-tigre":"Œil de tigre","jaspe":"Jaspe","gres-or":"Grès or","lapis-lazuli":"Lapis-lazuli","sodalite":"Sodalite","gres-bleu":"Grès bleu","onyx-noir":"Onyx noir","obsidienne-or":"Obsidienne or","agate-rouge":"Agate rouge","quartz-rose":"Quartz rose","amethyste":"Améthyste","aventurine-jaune":"Aventurine jaune"};const S=Object.keys(N),state={step:1,col:'Essentiel',wrist:'16–17 cm',count:16,socle:'agate-blanche',origin:'agate-blanche',mode:'simple',paths:[]};$=s=>document.querySelector(s);$$=s=>[...document.querySelectorAll(s)];function ch(l,s,a,x){return`<button class="choice ${a?'active':''}" ${x||''}><b>${l}</b>${s?`<small>${s}</small>`:''}</button>`}function st(s,a,x){return`<button class="stone ${a?'active':''}" ${x}><img src="${IMG[s]}"><span>${N[s]}</span></button>`}function init(){$('#cols').innerHTML=['Essentiel','Métal','Inox','Argent','Signature'].map(x=>ch(x,'',x===state.col,`data-col="${x}"`)).join('');$('#sizes').innerHTML=[['14–15 cm',14],['16–17 cm',16],['18–19 cm',18],['20–21 cm',20]].map(([w,c])=>ch(w,c+' perles maximum',w===state.wrist,`data-size="${w}" data-count="${c}"`)).join('');$('#socles').innerHTML=S.map(s=>st(s,s===state.socle,`data-socle="${s}"`)).join('');$('#origins').innerHTML=S.map(s=>st(s,s===state.origin,`data-origin="${s}"`)).join('');$('#modes').innerHTML=[['simple','Commencer simplement'],['started','Mon histoire a déjà commencé'],['free','Composer librement']].map(([i,l])=>ch(l,i==='free'?'Réorganisation pierre par pierre.':'Liberté complète, guidage adapté.',i===state.mode,`data-mode="${i}"`)).join('');$('#paths').innerHTML=S.map(s=>`<div class="prow"><img src="${IMG[s]}"><b>${N[s]}</b><div class="qty"><button data-minus="${s}">−</button><span data-q="${s}">0</span><button data-plus="${s}">+</button></div></div>`).join('');bind();refresh()}function bind(){$$( '[data-col]').forEach(b=>b.onclick=()=>{state.col=b.dataset.col;refresh()});$$('[data-size]').forEach(b=>b.onclick=()=>{state.wrist=b.dataset.size;state.count=+b.dataset.count;state.paths=state.paths.slice(0,state.count-1);refresh()});$$('[data-socle]').forEach(b=>b.onclick=()=>{state.socle=b.dataset.socle;refresh()});$$('[data-origin]').forEach(b=>b.onclick=()=>{state.origin=b.dataset.origin;refresh()});$$('[data-mode]').forEach(b=>b.onclick=()=>{state.mode=b.dataset.mode;refresh()});$$('[data-plus]').forEach(b=>b.onclick=()=>{if(state.paths.length<state.count-1)state.paths.push(b.dataset.plus);refresh()});$$('[data-minus]').forEach(b=>b.onclick=()=>{let i=state.paths.lastIndexOf(b.dataset.minus);if(i>=0)state.paths.splice(i,1);refresh()});$('#back').onclick=()=>{if(state.step>1)state.step--;refresh()};$('#next').onclick=()=>{if(state.step<7)state.step++;refresh()}}function bracelet(){let e=$('#bracelet');e.innerHTML='';let a=Array(state.count).fill(state.socle),o=Math.max(2,Math.floor(state.count*.18));a[o]=state.origin;state.paths.forEach((s,i)=>a[(o+1+i)%state.count]=s);let gap=36,start=108,span=324,r=37;a.forEach((s,i)=>{let t=(start+span/Math.max(1,a.length-1)*i)*Math.PI/180,m=document.createElement('img');m.className='bead';m.src=IMG[s];m.style.left=50+Math.cos(t)*r+'%';m.style.top=50+Math.sin(t)*r+'%';e.appendChild(m)});let c=document.createElement('div');c.className='clasp';c.style.left='50%';c.style.top=50+r+'%';e.appendChild(c)}function move(i,d){let j=i+d;if(j<0||j>=state.paths.length)return;[state.paths[i],state.paths[j]]=[state.paths[j],state.paths[i]];refresh()}function order(){let e=$('#selected');if(!state.paths.length){e.innerHTML='';return}e.innerHTML='<b>Ordre sur le bracelet</b>'+state.paths.map((s,i)=>`<div class="sel"><span>⋮⋮</span><img src="${IMG[s]}"><span>${N[s]}</span><span class="reorder"><button data-l="${i}">←</button><button data-r="${i}">→</button><button data-x="${i}">×</button></span></div>`).join('');$$('[data-l]').forEach(b=>b.onclick=()=>move(+b.dataset.l,-1));$$('[data-r]').forEach(b=>b.onclick=()=>move(+b.dataset.r,1));$$('[data-x]').forEach(b=>b.onclick=()=>{state.paths.splice(+b.dataset.x,1);refresh()})}function refresh(){$$( '.step').forEach(e=>e.classList.toggle('active',+e.dataset.step===state.step));$('#sn').textContent=state.step;$('#bar').style.width=state.step/7*100+'%';$('#st').textContent=['','Gamme','Taille','Socles','Origine','Parcours','Chemin','Récapitulatif'][state.step];$('#sum').textContent=state.col+' · '+state.wrist;$('#cnt').textContent=state.count;$('#res').textContent=state.paths.length;$$('[data-col]').forEach(b=>b.classList.toggle('active',b.dataset.col===state.col));$$('[data-size]').forEach(b=>b.classList.toggle('active',b.dataset.size===state.wrist));$$('[data-socle]').forEach(b=>b.classList.toggle('active',b.dataset.socle===state.socle));$$('[data-origin]').forEach(b=>b.classList.toggle('active',b.dataset.origin===state.origin));$$('[data-mode]').forEach(b=>b.classList.toggle('active',b.dataset.mode===state.mode));$$('[data-q]').forEach(b=>b.textContent=state.paths.filter(x=>x===b.dataset.q).length);$('#back').style.visibility=state.step===1?'hidden':'visible';$('#next').textContent=state.step===7?'Enregistrer':'Continuer';bracelet();order();$('#recap').innerHTML=`<div><span>Gamme</span><b>${state.col}</b></div><div><span>Poignet</span><b>${state.wrist}</b></div><div><span>Perles</span><b>${state.count} maximum</b></div><div><span>Socle</span><b>${N[state.socle]}</b></div><div><span>Origine</span><b>${N[state.origin]}</b></div><div><span>Perles de Chemin</span><b>${state.paths.length}</b></div><div><span>En Réserve</span><b>${state.paths.length}</b></div>`}init();</script></body></html>
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <title>Composer mon bracelet — Perlivio</title>
+  <meta name="description" content="Composez un bracelet Perlivio complet avec vos Perles Socles, votre Perle Origine et les pierres qui racontent votre chemin.">
+  <meta name="theme-color" content="#1c2a44">
+  <meta property="og:title" content="Composer mon bracelet — Perlivio">
+  <meta property="og:description" content="Un bracelet complet dès le premier jour, que vous pouvez recomposer au fil de votre histoire.">
+  <meta property="og:type" content="website">
+  <link rel="stylesheet" href="../assets/css/site.css">
+</head>
+<body class="composer">
+  <div class="announce">Un bracelet complet dès le premier jour <span>•</span> Jusqu’à 18 perles naturelles de 8 mm</div>
+  <header class="site-header">
+    <div class="header-inner">
+      <button class="menu-toggle" type="button" aria-label="Ouvrir le menu" aria-expanded="false" data-menu-toggle>☰</button>
+      <nav class="nav desktop" aria-label="Navigation principale">
+        <div class="nav-group">
+          <a class="nav-link" href="../bracelets/index.html">Bracelets</a>
+          <div class="mega">
+            <div><strong>Les gammes</strong><a href="../collections/essentiel/index.html">Essentiel</a><a href="../collections/metal/index.html">Métal</a><a href="../collections/inox/index.html">Inox</a><a href="../collections/argent/index.html">Argent</a><a href="../collections/signature/index.html">Signature</a></div>
+            <div><strong>Choisir</strong><a href="../comparateur/index.html">Comparer les gammes</a><a href="../taille/index.html">Mesurer mon poignet</a><a href="index.html">Composer mon bracelet</a><a href="../evoluer/index.html">Faire évoluer mon bracelet</a></div>
+          </div>
+        </div>
+        <div class="nav-group"><a class="nav-link" href="../pierres/index.html">Pierres</a></div>
+      </nav>
+      <a class="brand" href="../index.html">PERLIVIO<small>Le bijou de votre chemin</small></a>
+      <nav class="nav desktop right" aria-label="Navigation secondaire">
+        <div class="nav-group">
+          <a class="nav-link" href="../comprendre/index.html">Comprendre</a>
+          <div class="mega mega-right"><div><strong>Le concept</strong><a href="../comprendre/index.html">Comment ça marche</a><a href="../reserve/index.html">La Réserve</a><a href="../qualite/index.html">Qualité &amp; matériaux</a></div><div><strong>La maison</strong><a href="../fabrication/index.html">Fabrication</a><a href="../tracabilite/index.html">Traçabilité</a><a href="../notre-histoire/index.html">Notre histoire</a></div></div>
+        </div>
+        <a class="nav-link" href="../faq/index.html">FAQ</a>
+        <a class="nav-compose" aria-current="page" href="index.html">Composer</a>
+      </nav>
+      <a class="cart-link" href="../panier/index.html" aria-label="Voir le panier">Panier <span data-cart-count>0</span></a>
+    </div>
+    <nav class="mobile-nav" aria-label="Navigation mobile" data-mobile-nav>
+      <a href="../bracelets/index.html">Toutes les gammes</a><a href="index.html" aria-current="page">Composer mon bracelet</a><a href="../pierres/index.html">Les 18 pierres</a><a href="../comprendre/index.html">Comment ça marche</a><a href="../reserve/index.html">La Réserve</a><a href="../taille/index.html">Trouver ma taille</a><a href="../qualite/index.html">Qualité &amp; matériaux</a><a href="../faq/index.html">FAQ</a><a href="../contact/index.html">Contact</a>
+    </nav>
+  </header>
+
+  <main class="composer-page" data-composer>
+    <header class="composer-heading wrap">
+      <p class="kicker">Créer mon bracelet</p>
+      <h1>Votre point de départ,<br><em>déjà complet.</em></h1>
+      <p>Choisissez votre gamme et vos pierres. Vous pourrez ensuite remplacer des Perles Socles par les étapes qui comptent, sans allonger le bracelet ni perdre les pierres retirées.</p>
+    </header>
+
+    <div class="composer-layout wrap">
+      <aside class="composer-visual" aria-label="Aperçu de votre bracelet">
+        <div class="composer-sticky" data-preview-card>
+          <div class="bracelet-mount" data-bracelet data-collection="essentiel" data-wrist="16–17 cm" data-count="16" data-socle="agate-blanche" data-origin="agate-blanche"></div>
+          <div class="visual-summary" aria-live="polite">
+            <span class="preview-main"><small>Votre composition</small><b><span data-summary-collection>Essentiel</span> · <span data-summary-wrist>16–17 cm</span></b></span>
+            <span class="preview-count"><small>Perles</small><b data-summary-count>16</b></span>
+            <span class="preview-reserve"><small>Réserve</small><b data-summary-reserve>0</b></span>
+          </div>
+        </div>
+      </aside>
+
+      <section class="composer-panel" aria-label="Étapes de composition">
+        <div class="step-progress" aria-label="Progression">
+          <span>Étape <b data-step-current>1</b>/7</span>
+          <i aria-hidden="true"><u data-step-bar></u></i>
+          <span data-step-title>Gamme</span>
+        </div>
+
+        <section class="composer-step active" data-step="1">
+          <p class="kicker">01 · Votre style</p>
+          <h2>Quelle gamme vous ressemble ?</h2>
+          <p>Le principe reste identique. Les pierres, la finition et le rythme des intercalaires changent.</p>
+          <div class="collection-choice-grid">
+            <button class="collection-choice" type="button" data-collection-choice="essentiel"><img src="../assets/media/packshot-essentiel.webp" alt="" loading="lazy"><span>Essentiel</span><small>Les pierres seules, sans intercalaire décoratif.</small></button>
+            <button class="collection-choice" type="button" data-collection-choice="metal"><img src="../assets/media/packshot-metal.webp" alt="" loading="lazy"><span>Métal</span><small>Quelques accents sombres, graphiques et discrets.</small></button>
+            <button class="collection-choice" type="button" data-collection-choice="inox"><img src="../assets/media/packshot-inox.webp" alt="" loading="lazy"><span>Inox</span><small>Des reflets acier nets et contemporains.</small></button>
+            <button class="collection-choice" type="button" data-collection-choice="argent"><img src="../assets/media/packshot-argent.webp" alt="" loading="lazy"><span>Argent</span><small>Une finition fine, lumineuse et plus précieuse.</small></button>
+            <button class="collection-choice" type="button" data-collection-choice="signature"><img src="../assets/media/packshot-signature.webp" alt="" loading="lazy"><span>Signature</span><small>Une base monochrome qui révèle chaque future étape.</small></button>
+          </div>
+        </section>
+
+        <section class="composer-step" data-step="2">
+          <p class="kicker">02 · Votre poignet</p>
+          <h2>Quelle taille portez-vous ?</h2>
+          <p>Mesurez votre poignet au contact de la peau, sans serrer. Le nombre reste une estimation de montage et ne dépasse jamais 18 perles.</p>
+          <div class="wrist-options">
+            <button type="button" data-wrist="14–15 cm" data-count="14">14–15 cm<small>14 perles maximum</small></button>
+            <button type="button" data-wrist="16–17 cm" data-count="16">16–17 cm<small>16 perles maximum</small></button>
+            <button type="button" data-wrist="18–19 cm" data-count="17">18–19 cm<small>17 perles maximum</small></button>
+            <button type="button" data-wrist="20–21 cm" data-count="18">20–21 cm<small>18 perles maximum</small></button>
+          </div>
+          <a class="text-link" href="../taille/index.html">Voir le guide de mesure →</a>
+        </section>
+
+        <section class="composer-step" data-step="3">
+          <p class="kicker">03 · Votre base</p>
+          <h2>Choisissez vos Perles Socles</h2>
+          <p>Elles composent réellement votre premier bracelet. Rien n’est vide ou provisoire.</p>
+          <div class="mode-switch" aria-label="Motif des Perles Socles">
+            <button type="button" data-socle-mode="single">Une pierre</button>
+            <button type="button" data-socle-mode="alternate">Deux pierres alternées</button>
+          </div>
+          <h3>Première pierre Socle</h3>
+          <div class="bead-picker" data-socle-picker></div>
+          <div data-secondary-socle hidden>
+            <h3>Seconde pierre Socle</h3>
+            <div class="bead-picker" data-socle2-picker></div>
+          </div>
+        </section>
+
+        <section class="composer-step" data-step="4">
+          <p class="kicker">04 · Votre repère</p>
+          <h2>Quelle sera votre Perle Origine ?</h2>
+          <p data-origin-guidance>Une suggestion cohérente avec votre gamme est proposée par défaut. La Perle Origine garde le même diamètre de 8 mm que les autres.</p>
+          <div class="bead-picker" data-origin-picker></div>
+        </section>
+
+        <section class="composer-step" data-step="5">
+          <p class="kicker">05 · Votre histoire</p>
+          <h2>Où en êtes-vous aujourd’hui ?</h2>
+          <p>Ce choix adapte l’accompagnement, jamais le nombre de pierres que vous avez le droit de choisir.</p>
+          <div class="history-options journey-options">
+            <button type="button" data-journey="simple"><strong>Commencer simplement</strong><small>Un bracelet complet, puis quelques repères au fil du temps.</small></button>
+            <button type="button" data-journey="started"><strong>Mon histoire a déjà commencé</strong><small>Faites entrer dès aujourd’hui les étapes déjà franchies.</small></button>
+            <button type="button" data-journey="free"><strong>Composer librement</strong><small>Choisissez et ordonnez chaque pierre selon votre propre récit.</small></button>
+          </div>
+          <p class="journey-note" data-journey-note></p>
+        </section>
+
+        <section class="composer-step" data-step="6">
+          <p class="kicker">06 · Vos étapes</p>
+          <h2>Ajoutez vos Perles de Chemin</h2>
+          <p>Chaque nouvelle pierre remplace une Socle. Le bracelet reste complet et les Socles retirées rejoignent votre Réserve.</p>
+          <div class="path-progress">
+            <div><strong data-path-count>0 Perle de Chemin sélectionnée</strong><span data-path-remaining>15 places encore disponibles</span></div>
+            <i aria-hidden="true"><u data-path-meter></u></i>
+          </div>
+          <label class="path-search"><span>Rechercher une pierre</span><input type="search" placeholder="Ex. améthyste, onyx, quartz…" data-path-search></label>
+          <div class="path-quantity-grid" data-path-picker></div>
+          <div class="selected-paths" data-selected-paths aria-live="polite"></div>
+          <div class="path-order" data-path-order></div>
+          <p class="reserve-explain" data-reserve-explain></p>
+        </section>
+
+        <section class="composer-step" data-step="7">
+          <p class="kicker">07 · Votre bracelet</p>
+          <h2>Votre point de départ est prêt</h2>
+          <p>Relisez la composition avant de l’enregistrer dans votre panier de préparation.</p>
+          <div class="recap" data-composer-recap></div>
+          <div class="commerce-note"><strong>Préparation sans paiement</strong><p>Les prix, matières finales et variantes seront activés après validation commerciale. Votre composition peut déjà être enregistrée localement.</p></div>
+          <button class="btn primary full" type="button" data-add-config>Enregistrer cette composition</button>
+          <p class="save-status" data-save-status aria-live="polite"></p>
+        </section>
+
+        <div class="composer-nav">
+          <button class="btn secondary" type="button" data-prev>Retour</button>
+          <button class="btn primary" type="button" data-next>Continuer</button>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-grid wrap">
+      <div class="footer-lead"><a class="brand footer-brand" href="../index.html">PERLIVIO<small>Le bijou de votre chemin</small></a><p>Un bracelet complet aujourd’hui, capable d’accueillir demain les étapes qui comptent — sans perdre celles qui vous ont accompagné.</p><a class="btn light" href="index.html">Composer mon bracelet</a></div>
+      <div><strong>Choisir</strong><a href="../bracelets/index.html">Les 5 gammes</a><a href="../comparateur/index.html">Comparer</a><a href="index.html">Composer</a><a href="../pierres/index.html">Les pierres</a></div>
+      <div><strong>Comprendre</strong><a href="../comprendre/index.html">Le concept</a><a href="../reserve/index.html">La Réserve</a><a href="../taille/index.html">La taille</a><a href="../entretien/index.html">Entretien &amp; réparation</a></div>
+      <div><strong>Confiance</strong><a href="../qualite/index.html">Qualité &amp; matériaux</a><a href="../fabrication/index.html">Fabrication</a><a href="../tracabilite/index.html">Traçabilité</a><a href="../livraison-retours/index.html">Livraison &amp; retours</a></div>
+      <div><strong>Perlivio</strong><a href="../notre-histoire/index.html">Notre histoire</a><a href="../faq/index.html">FAQ</a><a href="../contact/index.html">Contact</a><a href="../carte-cadeau/index.html">Carte cadeau</a></div>
+    </div>
+    <div class="footer-bottom wrap"><span>Les significations associées aux pierres sont symboliques et personnelles ; aucune allégation médicale.</span><span><a href="../mentions-legales/index.html">Mentions légales</a> · <a href="../conditions-generales/index.html">CGV</a> · <a href="../confidentialite/index.html">Confidentialité</a></span></div>
+  </footer>
+  <script src="../assets/js/data.js"></script>
+  <script src="../assets/js/app.js"></script>
+</body>
+</html>
