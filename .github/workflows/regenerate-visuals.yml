@@ -51,3 +51,5 @@ jobs:
           fi
           git commit -m "fix: regenerate Perlivio site visuals"
           git push
+
+# This workflow is intentionally branch-scoped while the replacement visuals are reviewed.
