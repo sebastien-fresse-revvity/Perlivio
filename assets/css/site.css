@@ -445,3 +445,9 @@ p{margin:0 0 1.25rem}.lead{font-size:1.18rem;line-height:1.75}.light-text{color:
   .composer-nav{position:sticky;bottom:0;z-index:55;margin:22px -14px -82px;padding:10px 14px calc(10px + env(safe-area-inset-bottom));background:rgba(255,255,255,.98);box-shadow:0 -8px 20px rgba(19,35,61,.07)}.composer-nav .btn{flex:1;min-height:48px}.composer-nav .btn.secondary{max-width:108px}
 }
 @media(max-width:420px){.bead-picker{grid-template-columns:repeat(2,minmax(0,1fr))}.wrist-options{grid-template-columns:1fr}.composer-sticky{grid-template-columns:70px minmax(0,1fr)!important}.composer-sticky .bracelet-mount,.composer-sticky .bracelet-stage{width:68px!important;height:68px!important;min-height:68px!important}}
+
+
+/* visual-integrity-2026-08-29 */
+.bracelet-clasp{width:24%;height:auto;aspect-ratio:auto;left:50%;top:86.8%;transform:translate(-50%,-50%) rotate(-2deg);z-index:5;border-radius:0;background:transparent;box-shadow:none;filter:drop-shadow(0 5px 6px rgba(19,35,61,.22));object-fit:contain}
+.collection-packshot{object-fit:cover;aspect-ratio:1/1}
+@media(max-width:760px){.bracelet-clasp{width:25%;top:87%}}
